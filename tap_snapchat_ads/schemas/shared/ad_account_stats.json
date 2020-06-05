@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": ["null", "string"]
+    },
+    "type": {
+      "type": ["null", "string"]
+    },
+    "granularity": {
+      "type": ["null", "string"]
+    },
+    "swipe_up_attribution_window": {
+      "type": ["null", "string"]
+    },
+    "view_attribution_window": {
+      "type": ["null", "string"]
+    },
+    "start_time": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "end_time": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "finalized_data_end_time": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "spend": {
+      "type": ["null", "integer"]
+    }
+  }
+}

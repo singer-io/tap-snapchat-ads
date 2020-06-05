@@ -1,0 +1,20 @@
+{
+  "currently_syncing": "sitemaps",
+  "bookmarks": {
+    "ad_stats_hourly": "2020-06-05T00:00:00.000000Z",
+    "creatives": "2020-05-13T22:45:10.211000Z",
+    "phone_numbers": "2020-01-01T00:00:00Z",
+    "media": "2020-05-13T22:35:48.855000Z",
+    "ad_stats_daily": "2020-06-06T07:00:00.000000Z",
+    "ad_squads": "2020-05-14T00:04:37.878000Z",
+    "ad_squad_stats_daily": "2020-06-06T07:00:00.000000Z",
+    "campaign_stats_hourly": "2020-06-05T00:00:00.000000Z",
+    "campaign_stats_daily": "2020-06-06T07:00:00.000000Z",
+    "ad_squad_stats_hourly": "2020-06-05T00:00:00.000000Z",
+    "campaigns": "2020-05-13T20:49:08.794000Z",
+    "audience_segments": "2020-05-14T00:23:28.366000Z",
+    "ad_account_stats_hourly": "2020-06-05T00:00:00.000000Z",
+    "ad_account_stats_daily": "2020-06-04T07:00:00.000000Z",
+    "ads": "2020-05-14T00:21:29.398000Z"
+  }
+}

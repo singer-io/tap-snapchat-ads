@@ -1,0 +1,53 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": ["null", "string"]
+    },
+    "updated_at": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "created_at": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "name": {
+      "type": ["null", "string"]
+    },
+    "organization_id": {
+      "type": ["null", "string"]
+    },
+    "source": {
+      "type": ["null", "string"]
+    },
+    "event_sources": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": ["null", "object"],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": ["null", "string"]
+              },
+              "type": {
+                "type": ["null", "string"]
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "default_product_set_id": {
+      "type": ["null", "string"]
+    }
+  }
+}
+
+  

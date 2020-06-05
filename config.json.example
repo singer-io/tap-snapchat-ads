@@ -1,0 +1,11 @@
+{
+  "client_id": "YOUR_CLIENT_ID",
+  "client_secret": "YOUR_CLIENT_SECRET",
+  "refresh_token": "YOUR_REFRESH_TOKEN",
+  "swipe_up_attribution_window": "28_DAY",
+  "view_attribution_window": "7_DAY",
+  "omit_empty": "true",
+  "targeting_country_codes": "us, ca, mx",
+  "start_date": "2020-01-01T00:00:00Z",
+  "user_agent": "tap-snapchat-ads <api_user_email@example.com>"
+}

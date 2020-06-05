@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": ["null", "string"]
+    },
+    "catalog_id": {
+      "type": ["null", "string"]
+    },
+    "name": {
+      "type": ["null", "string"]
+    },
+    "filter": {
+      "type": ["null", "object"],
+      "additionalProperties": true,
+      "properties": {}
+    },
+    "updated_at": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "created_at": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    }
+  }
+}
+
+  
