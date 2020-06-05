@@ -94,7 +94,7 @@ The Snapchat Ads Marketing API uses OAuth for API Authentication. Follow these i
 
 4. Accept / Save API Terms and Conditions
   
-  ![Terms_Conditions](images/terms_conditions.png)
+  ![Terms_Conditions](images/terms_conditions.png =400x)
 
 5. Enter **App Name: **tap-snapchat-ads, **Snap Redirect URI:** **YOUR_REDIRECT_URI**, example: https://app.stitchdata.com/v2/integrations/platform.snapchat_ads/callback
 
@@ -109,8 +109,8 @@ The Snapchat Ads Marketing API uses OAuth for API Authentication. Follow these i
     2. Authenticate the API App with username, password, and connection approval (Continue, Continue).
     3. Code: Capture the ...&`code=xxxxxx…` in the redirect URL. This `code` is used in the next step to generate the `refresh_token`.
 
-  ![Connect_App](images/connect_to_app.png)
-  ![Connect_App](images/back_to_app.png)
+  ![Connect_App](images/connect_to_app.png =300x)
+  ![Connect_App](images/back_to_app.png =300x)
 
 8. Run the following curl command with the parameters replaced to return your `refresh_token`. The `refresh_token` persists indefinitely and is used to generate an `access_token` (short-lived) for authenticating each API Call.
     ```
