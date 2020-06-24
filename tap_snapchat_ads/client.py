@@ -249,6 +249,10 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
         except Exception as err:
             LOGGER.error('{}'.format(err))
             LOGGER.error('response.text = {}'.format(response.text))
+            LOGGER.error('response.content = {}'.format(response.content))
+            LOGGER.error('response.headers = {}'.format(response.headers))
+            LOGGER.error('response.raw = {}'.format(response.raw))
+            LOGGER.error('response.reason = {}'.format(response.reason))
             raise Exception(err)
 
         return response_json
