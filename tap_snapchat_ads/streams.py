@@ -106,7 +106,7 @@ STREAMS = {
                         'paging': False,
                         'parent': 'ad_account',
                         'params': {
-                            'test': 'true', # COMMENT OUT
+                            # 'test': 'true', # COMMENT OUT
                             'fields': 'spend',
                             'granularity': 'DAY',
                             'omit_empty': 'false',
@@ -130,7 +130,7 @@ STREAMS = {
                         'paging': False,
                         'parent': 'ad_account',
                         'params': {
-                            'test': 'true', # COMMENT OUT
+                            # 'test': 'true', # COMMENT OUT
                             'fields': 'spend',
                             'granularity': 'HOUR',
                             'omit_empty': 'false',
@@ -240,7 +240,7 @@ STREAMS = {
                                 'paging': False,
                                 'parent': 'campaign',
                                 'params': {
-                                    'test': 'true', # COMMENT OUT
+                                    # 'test': 'true', # COMMENT OUT
                                     'fields': ALL_STATS_FIELDS,
                                     'granularity': 'DAY',
                                     'omit_empty': 'false',
@@ -264,7 +264,7 @@ STREAMS = {
                                 'paging': False,
                                 'parent': 'campaign',
                                 'params': {
-                                    'test': 'true', # COMMENT OUT
+                                    # 'test': 'true', # COMMENT OUT
                                     'fields': ALL_STATS_FIELDS,
                                     'granularity': 'HOUR',
                                     'omit_empty': 'false',
@@ -302,7 +302,7 @@ STREAMS = {
                                 'paging': False,
                                 'parent': 'ad_squad',
                                 'params': {
-                                    'test': 'true', # COMMENT OUT
+                                    # 'test': 'true', # COMMENT OUT
                                     'fields': ALL_STATS_FIELDS,
                                     'granularity': 'DAY',
                                     'omit_empty': 'false',
@@ -326,7 +326,7 @@ STREAMS = {
                                 'paging': False,
                                 'parent': 'ad_squad',
                                 'params': {
-                                    'test': 'true', # COMMENT OUT
+                                    # 'test': 'true', # COMMENT OUT
                                     'fields': ALL_STATS_FIELDS,
                                     'granularity': 'HOUR',
                                     'omit_empty': 'false',
@@ -364,7 +364,7 @@ STREAMS = {
                                 'paging': False,
                                 'parent': 'ad',
                                 'params': {
-                                    'test': 'true', # COMMENT OUT
+                                    # 'test': 'true', # COMMENT OUT
                                     'fields': ALL_STATS_FIELDS,
                                     'granularity': 'DAY',
                                     'omit_empty': 'false',
@@ -388,7 +388,7 @@ STREAMS = {
                                 'paging': False,
                                 'parent': 'ad',
                                 'params': {
-                                    'test': 'true', # COMMENT OUT
+                                    # 'test': 'true', # COMMENT OUT
                                     'fields': ALL_STATS_FIELDS,
                                     'granularity': 'HOUR',
                                     'omit_empty': 'false',

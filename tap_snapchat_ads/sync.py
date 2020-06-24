@@ -346,7 +346,7 @@ def sync_endpoint(
                                 transformed_record = humps.decamelize(record)
                             except Exception as err:
                                 LOGGER.error('{}'.format(err))
-                                LOGGER.error('error record: {}'.format(record)) # COMMENT OUT
+                                # LOGGER.error('error record: {}'.format(record)) # COMMENT OUT
                                 raise Exception(err)
 
                             # verify primary_keys are in tansformed_record

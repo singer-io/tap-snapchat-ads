@@ -111,7 +111,7 @@ class TestSyncNonReportStreams(unittest.TestCase):
         # # Verify that bookmark values are correct after incremental sync
         bookmark_props = configuration['bookmark']
         current_state = menagerie.get_state(conn_id)
-        test_bookmark = current_state['bookmarks'][bookmark_props['bookmark_key']]
+        test_bookmark = current_state['bookmarks'][bookmark_props['bookmark_dict']][bookmark_props['bookmark_key']]
         print(test_bookmark)
         self.assertTrue(test_bookmark == bookmark_props['bookmark_timestamp'],
                         msg="The bookmark value does not match the expected result")

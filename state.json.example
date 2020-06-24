@@ -1,20 +1,131 @@
 {
-  "currently_syncing": "sitemaps",
+  "currently_syncing": "organizations",
   "bookmarks": {
-    "ad_stats_hourly": "2020-06-05T00:00:00.000000Z",
-    "creatives": "2020-05-13T22:45:10.211000Z",
-    "phone_numbers": "2020-01-01T00:00:00Z",
-    "media": "2020-05-13T22:35:48.855000Z",
-    "ad_stats_daily": "2020-06-06T07:00:00.000000Z",
-    "ad_squads": "2020-05-14T00:04:37.878000Z",
-    "ad_squad_stats_daily": "2020-06-06T07:00:00.000000Z",
-    "campaign_stats_hourly": "2020-06-05T00:00:00.000000Z",
-    "campaign_stats_daily": "2020-06-06T07:00:00.000000Z",
-    "ad_squad_stats_hourly": "2020-06-05T00:00:00.000000Z",
-    "campaigns": "2020-05-13T20:49:08.794000Z",
-    "audience_segments": "2020-05-14T00:23:28.366000Z",
-    "ad_account_stats_hourly": "2020-06-05T00:00:00.000000Z",
-    "ad_account_stats_daily": "2020-06-04T07:00:00.000000Z",
-    "ads": "2020-05-14T00:21:29.398000Z"
+    "ad_squad_stats_daily": {
+      "end_time(parent_ad_squad_id:537a0933-87fb-4450-8f0c-9c890b451971)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_ad_squad_id:4a0ba80d-8c12-4467-9c91-d9888a28d65c)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_ad_squad_id:2356aa91-f60f-4f55-8ccc-1e845e12556e)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_ad_squad_id:e3cd4552-d01f-4bff-b2da-8a04e5942f7e)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_ad_squad_id:d6da444b-0e18-427d-8d92-1d8a3406e6a8)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_ad_squad_id:f5c96bae-0488-4228-8c1e-00e654ab4bb4)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_ad_squad_id:ff7ed2f7-5ca4-4a8b-9848-d09024e06b66)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_ad_squad_id:33e246f8-ff7b-4d7a-9811-8aa1da664b6d)": "2020-06-24T07:00:00.000000Z"
+    },
+    "campaign_stats_hourly": {
+      "end_time(parent_campaign_id:e76d71d4-1bb0-49d8-bf52-9c22fb35d24a)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_campaign_id:b4c59d32-06d3-40d9-b896-e1b6191d88a5)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_campaign_id:a111567f-657d-4f62-8127-1cd3a84dd152)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_campaign_id:cb80f6ec-3077-4264-b035-fba5d1415a73)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_campaign_id:5989f928-d6d1-428e-b9f0-e82dc72b13bd)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_campaign_id:11882792-5036-46e2-bbfa-103b0973420b)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_campaign_id:bffb0397-45d5-4e31-84e6-97f006620cca)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_campaign_id:8c3407b4-1add-46ef-b917-76aba07e9519)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_campaign_id:ef0ae960-145f-4b2f-a574-91ffc73f5bfe)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_campaign_id:46f2320f-9b44-44ce-9578-f340d03772b5)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_campaign_id:46a7c480-ae91-40fb-9bca-842e250a83ca)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_campaign_id:918f375f-b405-462e-9f52-ae40288d6496)": "2020-06-24T15:00:00.000000Z"
+    },
+    "billing_centers": {
+      "updated_at(parent_organization_id:d373b68c-a28e-4fbe-8ba2-38a85925d7be)": "2020-05-13T16:43:10.841000Z"
+    },
+    "ad_squad_stats_hourly": {
+      "end_time(parent_ad_squad_id:537a0933-87fb-4450-8f0c-9c890b451971)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_squad_id:4a0ba80d-8c12-4467-9c91-d9888a28d65c)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_squad_id:2356aa91-f60f-4f55-8ccc-1e845e12556e)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_squad_id:e3cd4552-d01f-4bff-b2da-8a04e5942f7e)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_squad_id:d6da444b-0e18-427d-8d92-1d8a3406e6a8)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_squad_id:f5c96bae-0488-4228-8c1e-00e654ab4bb4)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_squad_id:ff7ed2f7-5ca4-4a8b-9848-d09024e06b66)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_squad_id:33e246f8-ff7b-4d7a-9811-8aa1da664b6d)": "2020-06-24T15:00:00.000000Z"
+    },
+    "audience_segments": {
+      "updated_at(parent_ad_account_id:a792a56f-66f0-407e-82ca-ccb30ced0ba7)": "2020-06-09T14:21:28.793000Z"
+    },
+    "creatives": {
+      "updated_at(parent_ad_account_id:a792a56f-66f0-407e-82ca-ccb30ced0ba7)": "2020-05-13T22:45:10.211000Z"
+    },
+    "campaigns": {
+      "updated_at(parent_ad_account_id:ef0ae960-145f-4b2f-a574-91ffc73f5bfe)": "2020-05-13T20:49:08.794000Z"
+    },
+    "pixels": {
+      "updated_at(parent_ad_account_id:353223b7-6d20-4686-899b-29176f7c439c)": "2020-05-14T02:18:37.604000Z"
+    },
+    "ad_account_stats_hourly": {
+      "end_time(parent_ad_account_id:a792a56f-66f0-407e-82ca-ccb30ced0ba7)": "2020-06-24T15:00:00.000000Z"
+    },
+    "ad_squads": {
+      "updated_at(parent_ad_account_id:ff7ed2f7-5ca4-4a8b-9848-d09024e06b66)": "2020-05-14T00:04:37.878000Z"
+    },
+    "ad_stats_hourly": {
+      "end_time(parent_ad_id:1876617a-7f3a-4743-932a-f37e94481b52)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:4ea60ebe-2224-45a2-8df7-96f82d392824)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:5f69f58e-4919-45f1-9374-10eef564acc7)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:4eb1b04e-c02a-4f8d-ae5c-6927b919cf09)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:45c0ce3d-c2d4-4280-a4ff-a4c36ce0fccd)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:489ac2eb-9a3c-4cd5-abf2-210adcdf311c)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:65b3c233-a976-4222-a30d-02e3686e277a)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:44d9b53f-8d0f-4453-908d-17b80e597941)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:1c3f0f72-4507-4641-8acf-982d7a83865b)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:4c57687d-498f-4ac4-86ca-6980006bb0fd)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:0970acf6-e05a-4aff-8ebc-bb0ffe5c8648)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:7c50e02b-0c8b-471f-aefa-ef11814c5943)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:14b6d7c9-63ff-4fac-9bfb-1b4e8b25af06)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:217f1eb2-4442-4a1e-9dbc-0a4680ed25f4)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:4bfa253e-b34a-4353-a8b3-9c3553a9336b)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:879f4017-045d-46a2-a672-c7187cd2168e)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:325fbd13-3264-4a15-b898-5b49eed7c71d)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:2dff372b-10d9-4e55-a2ff-69158ad25b4f)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:063b8700-645b-4cb2-80b0-72ee691e0765)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:08457cf1-2a76-445b-b54d-a21b439199f3)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:53b13e11-ac28-4782-a359-aba1a970eb76)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:0e4a1d0c-3a01-4e0b-8d19-923167b7dbad)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:699ae82c-40b0-498a-a8cd-5164218a7a79)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:61fb3d1c-9ed5-4d9a-b999-99042e421c4a)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:142a831d-12c4-4f45-b31d-8fb0eb36c28d)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:41f764f4-d6dc-4510-a0c1-707e8ac6e23f)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:217a949b-0a5d-43a7-95ad-14e5bbe3260d)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:1d7339bd-a03c-4bfa-bf31-9a8148c20cc4)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:6613374c-0385-4fd1-aefa-398a6c1c2737)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:5c012f1f-7c13-4024-9780-89241f7e5e33)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:8dc17649-99ba-46b9-aafc-07096054113f)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:448328bb-c710-4c5e-ac25-a9966a81f329)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:2028d244-4ed4-4368-a889-1a021f916e75)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:74334c13-d23e-4679-9672-52108f6a31b6)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:43253b45-4369-4f2d-8631-364ad17872b7)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:64d9a2dc-532d-4074-b5f5-f60c8f9f4c9d)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:2da84f12-4ee2-47a7-9487-ea22a9664e77)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:07df4ce9-ee55-4dfb-a779-b6a7e4cf903c)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:91b20deb-994b-4c29-a081-7d76275e3802)": "2020-05-27T00:00:00.000000Z",
+      "end_time(parent_ad_id:59ba2969-7ba9-4737-9985-f59d52484a7b)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:87d40ec7-d70c-4f60-9d64-e3f33bcb0e24)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:46a7cb07-0fd2-46e0-b968-7ab6d7503a35)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:32179438-3eac-4e65-9d1d-992d90152818)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:54ac1d71-ed0d-4655-8efb-b7336e657b7b)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:2eb082f4-e158-4434-a5f0-3573fa46b34f)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:3bb11489-8e88-4f7c-bbe4-820b01799f7c)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:1a370689-47ed-43cc-b8da-56a724833797)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:04d4bfbc-3b76-40db-aca1-79e4d78b9896)": "2020-06-24T15:00:00.000000Z",
+      "end_time(parent_ad_id:70e3dab0-7039-4b92-b7cb-7905771b62c4)": "2020-06-24T15:00:00.000000Z"
+    },
+    "phone_numbers": {
+      "updated_at(parent_ad_account_id:a792a56f-66f0-407e-82ca-ccb30ced0ba7)": "2020-04-01T00:00:00Z"
+    },
+    "campaign_stats_daily": {
+      "end_time(parent_campaign_id:e76d71d4-1bb0-49d8-bf52-9c22fb35d24a)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_campaign_id:b4c59d32-06d3-40d9-b896-e1b6191d88a5)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_campaign_id:a111567f-657d-4f62-8127-1cd3a84dd152)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_campaign_id:cb80f6ec-3077-4264-b035-fba5d1415a73)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_campaign_id:5989f928-d6d1-428e-b9f0-e82dc72b13bd)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_campaign_id:11882792-5036-46e2-bbfa-103b0973420b)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_campaign_id:bffb0397-45d5-4e31-84e6-97f006620cca)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_campaign_id:8c3407b4-1add-46ef-b917-76aba07e9519)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_campaign_id:ef0ae960-145f-4b2f-a574-91ffc73f5bfe)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_campaign_id:46f2320f-9b44-44ce-9578-f340d03772b5)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_campaign_id:46a7c480-ae91-40fb-9bca-842e250a83ca)": "2020-06-24T07:00:00.000000Z",
+      "end_time(parent_campaign_id:918f375f-b405-462e-9f52-ae40288d6496)": "2020-06-24T07:00:00.000000Z"
+    },
+    "ad_account_stats_daily": {
+      "end_time(parent_ad_account_id:a792a56f-66f0-407e-82ca-ccb30ced0ba7)": "2020-06-24T07:00:00.000000Z"
+    }
   }
 }

@@ -16,7 +16,8 @@ def config():
             "refresh_token": "TAP_SNAPCHAT_ADS_REFRESH_TOKEN",
         },
         "bookmark": {
-            "bookmark_key": "organizations",
+            "bookmark_dict": "organizations",
+            "bookmark_key": "updated_at",
             "bookmark_timestamp": "2020-05-11T21:30:43.303000Z"
         },
         "streams": {
