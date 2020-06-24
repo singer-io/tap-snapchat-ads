@@ -25,4 +25,11 @@ setup(name='tap-snapchat-ads',
               'schemas/shared/*.json',
               'tests/*.py'
           ]
+      },
+      extras_require={
+          'dev': [
+              'pylint',
+              'ipdb',
+              'nose',
+          ]
       })
