@@ -1,3 +1,4 @@
 include LICENSE
 include tap_snapchat_ads/schemas/*.json
 include tap_snapchat_ads/schemas/shared/*.json
+include tap_snapchat_ads/tests/*.py

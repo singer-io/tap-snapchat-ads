@@ -34,21 +34,39 @@ def write_record(stream_name, record, time_extracted):
         raise err
 
 
-def get_bookmark(state, stream, default):
+def get_bookmark(state, stream, default, bookmark_field=None, parent=None, parent_id=None):
     if (state is None) or ('bookmarks' not in state):
         return default
+    
+    if bookmark_field is None:
+        return default
+
+    if parent and parent_id:
+        key = '{}(parent_{}_id:{})'.format(bookmark_field, parent, parent_id)
+    else:
+        key = bookmark_field
+
     return (
         state
         .get('bookmarks', {})
-        .get(stream, default)
+        .get(stream, {})
+        .get(key, default)
     )
 
 
-def write_bookmark(state, stream, value):
+def write_bookmark(state, stream, value, bookmark_field=None, parent=None, parent_id=None):
+    if parent and parent_id:
+        key = '{}(parent_{}_id:{})'.format(bookmark_field, parent, parent_id)
+    else:
+        key = bookmark_field
     if 'bookmarks' not in state:
         state['bookmarks'] = {}
-    state['bookmarks'][stream] = value
-    LOGGER.info('Write state for stream: {}, value: {}'.format(stream, value))
+    if stream not in state['bookmarks']:
+        state['bookmarks'][stream] = {}
+    
+    state['bookmarks'][stream][key] = value
+    LOGGER.info('Write state for Stream: {}, {} ID: {}, value: {}'.format(
+        stream, parent, parent_id, value))
     singer.write_state(state)
 
 
@@ -127,6 +145,7 @@ def sync_endpoint(
         stream_name,
         endpoint_config,
         sync_streams,
+        selected_streams,
         timezone_desc=None,
         parent_id=None):
 
@@ -150,10 +169,15 @@ def sync_endpoint(
     start_date = config.get('start_date')
     swipe_up_attribution_window = config.get('swipe_up_attribution_window', '28_DAY')
     view_attribution_window = config.get('view_attribution_window', '7_DAY')
-    attribution_window = max(
-        1,
-        int(swipe_up_attribution_window.replace('_DAY', '')),
-        int(view_attribution_window.replace('_DAY', '')))
+
+    swipe_up_attr = int(swipe_up_attribution_window.replace('_DAY', ''))
+
+    if view_attribution_window in ('1_HOUR', '3_HOUR', '6_HOUR',):
+        view_attr = 1
+    else:
+        view_attr = int(view_attribution_window.replace('_DAY', ''))
+
+    attribution_window = max(1, swipe_up_attr, view_attr)
 
     omit_empty = config.get('omit_empty', 'true')
     if '_stats_' in stream_name:
@@ -172,7 +196,7 @@ def sync_endpoint(
         timezone = pytz.timezone(timezone_desc)
     LOGGER.info('timezone = {}'.format(timezone))
 
-    last_datetime = get_bookmark(state, stream_name, start_date)
+    last_datetime = get_bookmark(state, stream_name, start_date, bookmark_field, parent, parent_id)
     max_bookmark_value = last_datetime
 
     # Convert to datetimes in local/ad account timezone
@@ -300,6 +324,7 @@ def sync_endpoint(
                 # LOGGER.info('data = {}'.format(data)) # TESTING, comment out
                 transformed_data = [] # initialize the record list
 
+                # Reports stats streams de-nesting
                 if '_stats_' in stream_name:
                     for data_record in data.get(data_key_array, []):
                         base_record = data_record.get(data_key_record, {})
@@ -321,7 +346,7 @@ def sync_endpoint(
                                 transformed_record = humps.decamelize(record)
                             except Exception as err:
                                 LOGGER.error('{}'.format(err))
-                                LOGGER.error('error record: {}'.format(record))
+                                LOGGER.error('error record: {}'.format(record)) # COMMENT OUT
                                 raise Exception(err)
 
                             # verify primary_keys are in tansformed_record
@@ -336,6 +361,7 @@ def sync_endpoint(
                         # End for data_record in array
                     # End stats stream
 
+                # Other streams de-nesting
                 else: # Not stats stream
                     for data_record in data.get(data_key_array, []):
                         sub_request_status = data_record.get('sub_request_status')
@@ -344,7 +370,7 @@ def sync_endpoint(
 
                         record = data_record.get(data_key_record, {})
 
-                        # Additional fields for targeting
+                        # Transforms to align schemas for targeting streams
                         if stream_name.startswith('targeting_'):
                             record['targeting_group'] = targeting_group
                             record['targeting_type'] = targeting_type
@@ -366,7 +392,7 @@ def sync_endpoint(
                             parent_key = '{}_id'.format(parent)
                             record[parent_key] = parent_id
 
-                        # transform record
+                        # transform record (remove inconsistent use of CamelCase)
                         try:
                             transformed_record = humps.decamelize(record)
                         except Exception as err:
@@ -440,6 +466,7 @@ def sync_endpoint(
                                     stream_name=child_stream_name,
                                     endpoint_config=child_endpoint_config,
                                     sync_streams=sync_streams,
+                                    selected_streams=selected_streams,
                                     timezone_desc=timezone_desc,
                                     parent_id=parent_id)
 
@@ -455,17 +482,11 @@ def sync_endpoint(
                 total_records = total_records + record_count
                 endpoint_total = endpoint_total + record_count
 
-                # to_rec: to record; ending record for the batch page
-                if limit:
-                    to_rec = offset + limit
-                else:
-                    to_rec = total_records
-
                 LOGGER.info('Synced Stream: {}, page: {}, records: {} to {}'.format(
                     stream_name,
                     page,
                     offset,
-                    to_rec))
+                    total_records))
                 # Pagination: increment the offset by the limit (batch-size) and page
                 if limit:
                     offset = offset + limit
@@ -475,8 +496,8 @@ def sync_endpoint(
 
         # Update the state with the max_bookmark_value for the stream date window
         # Snapchat Ads API does not allow page/batch sorting; bookmark written for date window
-        if bookmark_field and stream_name in sync_streams:
-            write_bookmark(state, stream_name, max_bookmark_value)
+        if bookmark_field and stream_name in selected_streams:
+            write_bookmark(state, stream_name, max_bookmark_value, bookmark_field, parent, parent_id)
 
         # Increment date window and sum endpoint_total
         start_window = end_window
@@ -553,7 +574,8 @@ def sync(client, config, catalog, state):
                 state=state,
                 stream_name=stream_name,
                 endpoint_config=endpoint_config,
-                sync_streams=sync_streams)
+                sync_streams=sync_streams,
+                selected_streams=selected_streams)
 
             update_currently_syncing(state, None)
             LOGGER.info('FINISHED Syncing: {}, total_records: {}'.format(

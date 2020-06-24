@@ -104,6 +104,7 @@ STREAMS = {
                         'data_key_record': 'timeseries_stat',
                         'date_window_size': 30,
                         'paging': False,
+                        'parent': 'ad_account',
                         'params': {
                             'test': 'true', # COMMENT OUT
                             'fields': 'spend',
@@ -127,6 +128,7 @@ STREAMS = {
                         'data_key_record': 'timeseries_stat',
                         'date_window_size': 7,
                         'paging': False,
+                        'parent': 'ad_account',
                         'params': {
                             'test': 'true', # COMMENT OUT
                             'fields': 'spend',
@@ -236,6 +238,7 @@ STREAMS = {
                                 'data_key_record': 'timeseries_stat',
                                 'date_window_size': 30,
                                 'paging': False,
+                                'parent': 'campaign',
                                 'params': {
                                     'test': 'true', # COMMENT OUT
                                     'fields': ALL_STATS_FIELDS,
@@ -259,6 +262,7 @@ STREAMS = {
                                 'data_key_record': 'timeseries_stat',
                                 'date_window_size': 7,
                                 'paging': False,
+                                'parent': 'campaign',
                                 'params': {
                                     'test': 'true', # COMMENT OUT
                                     'fields': ALL_STATS_FIELDS,
@@ -296,6 +300,7 @@ STREAMS = {
                                 'data_key_record': 'timeseries_stat',
                                 'date_window_size': 30,
                                 'paging': False,
+                                'parent': 'ad_squad',
                                 'params': {
                                     'test': 'true', # COMMENT OUT
                                     'fields': ALL_STATS_FIELDS,
@@ -319,6 +324,7 @@ STREAMS = {
                                 'data_key_record': 'timeseries_stat',
                                 'date_window_size': 7,
                                 'paging': False,
+                                'parent': 'ad_squad',
                                 'params': {
                                     'test': 'true', # COMMENT OUT
                                     'fields': ALL_STATS_FIELDS,
@@ -356,6 +362,7 @@ STREAMS = {
                                 'data_key_record': 'timeseries_stat',
                                 'date_window_size': 30,
                                 'paging': False,
+                                'parent': 'ad',
                                 'params': {
                                     'test': 'true', # COMMENT OUT
                                     'fields': ALL_STATS_FIELDS,
@@ -379,6 +386,7 @@ STREAMS = {
                                 'data_key_record': 'timeseries_stat',
                                 'date_window_size': 7,
                                 'paging': False,
+                                'parent': 'ad',
                                 'params': {
                                     'test': 'true', # COMMENT OUT
                                     'fields': ALL_STATS_FIELDS,

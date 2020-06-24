@@ -167,8 +167,9 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
             raise_for_error(response)
 
         data = response.json()
-        self.__access_token = data['access_token']
-        self.__expires = datetime.utcnow() + timedelta(seconds=data['expires_in'])
+        self.__access_token = data.get('access_token')
+        expires_in = int(data.get('expires_in', '3600'))
+        self.__expires = datetime.utcnow() + timedelta(seconds=expires_in)
         LOGGER.info('Authorized, token expires = {}'.format(self.__expires))
 
 
