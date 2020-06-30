@@ -8,29 +8,40 @@ jobs:
       - run:
           name: 'Setup virtual env'
           command: |
-            python3 -mvenv /usr/local/share/virtualenvs/tap-snapchat-ads
+            python3 -m venv /usr/local/share/virtualenvs/tap-snapchat-ads
             source /usr/local/share/virtualenvs/tap-snapchat-ads/bin/activate
-            pip install -U 'pip<19.2' setuptools
+            pip install --upgrade pip
             pip install .[dev]
-      - add_ssh_keys
       - run:
-          name: 'Integration Tests'
+          name: 'pylint'
           command: |
-            aws s3 cp s3://com-stitchdata-dev-deployment-assets/environments/tap-tester/sandbox dev_env.sh
-            source dev_env.sh
+            source /usr/local/share/virtualenvs/tap-snapchat-ads/bin/activate
+            pylint tap_snapchat_ads -d 'broad-except,chained-comparison,empty-docstring,fixme,invalid-name,line-too-long,missing-class-docstring,missing-function-docstring,missing-module-docstring,no-else-raise,no-else-return,too-few-public-methods,too-many-arguments,too-many-branches,too-many-lines,too-many-locals,ungrouped-imports,wrong-spelling-in-comment,wrong-spelling-in-docstring,logging-format-interpolation,too-many-nested-blocks,too-many-statements,redefined-builtin,protected-access'
+      - run:
+          name: 'JSON Validator'
+          command: |
             source /usr/local/share/virtualenvs/tap-tester/bin/activate
-            run-test --tap=tap-snapchat-ads \
-                       --target=target-stitch \
-                       --orchestrator=stitch-orchestrator \
-                       --email=harrison+sandboxtest@stitchdata.com \
-                       --password=$SANDBOX_PASSWORD \
-                       --client-id=50 \
-                       tests
+            stitch-validate-json /usr/local/share/virtualenvs/tap-snapchat-ads/lib/python3.5/site-packages/tap_snapchat_ads/schemas/*.json
+      - add_ssh_keys
+      # - run:
+      #     name: 'Integration Tests'
+      #     command: |
+      #       aws s3 cp s3://com-stitchdata-dev-deployment-assets/environments/tap-tester/sandbox dev_env.sh
+      #       source dev_env.sh
+      #       source /usr/local/share/virtualenvs/tap-tester/bin/activate
+      #       run-test --tap=tap-snapchat-ads \
+      #                  --target=target-stitch \
+      #                  --orchestrator=stitch-orchestrator \
+      #                  --email=harrison+sandboxtest@stitchdata.com \
+      #                  --password=$SANDBOX_PASSWORD \
+      #                  --client-id=50 \
+      #                  tests
 workflows:
   version: 2
   commit:
     jobs:
-      - build
+      - build:
+          context: circleci-user
   build_daily:
     triggers:
       - schedule:
@@ -40,4 +51,5 @@ workflows:
               only:
                 - master
     jobs:
-      - build
+      - build:
+          context: circleci-user
