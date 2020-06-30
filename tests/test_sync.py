@@ -5,7 +5,7 @@ Test tap combined
 import unittest
 from datetime import datetime, timedelta
 import os
-from test_configuration import config
+from test_configurations import config
 from tap_tester import menagerie
 import tap_tester.runner as runner
 import tap_tester.connections as connections
