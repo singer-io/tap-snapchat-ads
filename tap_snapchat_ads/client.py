@@ -101,7 +101,6 @@ def raise_for_error(response):
             request_status = response_json.get('request_status')
             error_code = response_json.get('error_code')
             debug_message = response_json.get('debug_message')
-            display_message = response_json.get('display_message')
 
             if request_status == 'ERROR':
                 error_message = '{}, {}: {}'.format(status_code, error_code, debug_message)

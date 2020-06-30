@@ -37,7 +37,7 @@ def write_record(stream_name, record, time_extracted):
 def get_bookmark(state, stream, default, bookmark_field=None, parent=None, parent_id=None):
     if (state is None) or ('bookmarks' not in state):
         return default
-    
+
     if bookmark_field is None:
         return default
 
@@ -63,7 +63,7 @@ def write_bookmark(state, stream, value, bookmark_field=None, parent=None, paren
         state['bookmarks'] = {}
     if stream not in state['bookmarks']:
         state['bookmarks'][stream] = {}
-    
+
     state['bookmarks'][stream][key] = value
     LOGGER.info('Write state for Stream: {}, {} ID: {}, value: {}'.format(
         stream, parent, parent_id, value))
@@ -545,7 +545,7 @@ def sync(client, config, catalog, state):
         parent_stream = stream_metadata.get('parent_stream')
         grandparent_stream = stream_metadata.get('grandparent_stream')
         great_grandparent_stream = stream_metadata.get('great_grandparent_stream')
-        
+
         if stream_name in selected_streams:
             LOGGER.info('stream: {}, parent: {}, grandparent: {}, great_grandparent: {}'.format(
                 stream_name, parent_stream, grandparent_stream, great_grandparent_stream))
