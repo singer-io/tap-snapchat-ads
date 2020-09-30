@@ -126,14 +126,14 @@ def process_records(catalog, #pylint: disable=too-many-branches
 
 
 def remove_minutes_local(dttm, timezone):
-    new_dttm = new_dttm = dttm.astimezone(timezone).replace(
-        minute=0, second=0, microsecond=0).strftime('%Y-%m-%dT%H:%M:%S%z')
+    new_dttm = dttm.astimezone(timezone).replace(
+        minute=0, second=0, microsecond=0).astimezone(pytz.timezone('UTC')).strftime('%Y-%m-%dT%H:%M:%SZ')
     return new_dttm
 
 
 def remove_hours_local(dttm, timezone):
-    new_dttm = new_dttm = dttm.astimezone(timezone).replace(
-        hour=0, minute=0, second=0, microsecond=0).strftime('%Y-%m-%dT%H:%M:%S%z')
+    new_dttm = dttm.astimezone(timezone).replace(
+        hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.timezone('UTC')).strftime('%Y-%m-%dT%H:%M:%SZ')
     return new_dttm
 
 # Sync a specific parent or child endpoint.
