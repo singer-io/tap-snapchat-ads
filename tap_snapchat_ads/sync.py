@@ -1,5 +1,6 @@
 import math
 from datetime import timedelta
+from urllib.parse import urlencode
 import pytz
 import humps
 import singer
@@ -191,6 +192,10 @@ def sync_endpoint(
 
     # Get the timezone and latest bookmark for the stream
     if not timezone_desc:
+        if '_stats_' in stream_name:
+            msg = "timezone must be selected in ad_accounts stream"
+            LOGGER.critical(msg)
+            raise ValueError(msg)
         timezone = pytz.timezone('UTC')
     else:
         timezone = pytz.timezone(timezone_desc)
@@ -282,8 +287,8 @@ def sync_endpoint(
                     swipe_up_attribution_window=swipe_up_attribution_window,
                     view_attribution_window=view_attribution_window)
                 params[key] = new_val
-            # concate params
-            querystring = '&'.join(['%s=%s' % (key, value) for (key, value) in params.items()])
+            # create URL from dictionary
+            querystring = urlencode(params)
 
             # initialize next_url
             next_url = '{}/{}?{}'.format(
