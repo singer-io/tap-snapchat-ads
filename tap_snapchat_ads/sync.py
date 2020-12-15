@@ -303,7 +303,7 @@ def sync_endpoint(
                 except Exception as err:
                     LOGGER.error('{}'.format(err))
                     LOGGER.error('URL for Stream {}: {}'.format(stream_name, next_url))
-                    raise Exception(err)
+                    raise
 
                 # time_extracted: datetime when the data was extracted from the API
                 time_extracted = utils.now()
@@ -347,7 +347,7 @@ def sync_endpoint(
                             except Exception as err:
                                 LOGGER.error('{}'.format(err))
                                 # LOGGER.error('error record: {}'.format(record)) # COMMENT OUT
-                                raise Exception(err)
+                                raise
 
                             # verify primary_keys are in tansformed_record
                             if 'id' not in transformed_record or 'start_time' not in transformed_record:
@@ -398,7 +398,7 @@ def sync_endpoint(
                         except Exception as err:
                             LOGGER.error('{}'.format(err))
                             LOGGER.error('error record: {}'.format(record))
-                            raise Exception(err)
+                            raise
 
                         # verify primary_keys are in tansformed_record
                         for key in id_fields:
