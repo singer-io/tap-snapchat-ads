@@ -16,7 +16,7 @@ jobs:
           name: 'pylint'
           command: |
             source /usr/local/share/virtualenvs/tap-snapchat-ads/bin/activate
-            pylint tap_snapchat_ads -d 'broad-except,chained-comparison,empty-docstring,fixme,invalid-name,line-too-long,missing-class-docstring,missing-function-docstring,missing-module-docstring,no-else-raise,no-else-return,too-few-public-methods,too-many-arguments,too-many-branches,too-many-lines,too-many-locals,ungrouped-imports,wrong-spelling-in-comment,wrong-spelling-in-docstring,logging-format-interpolation,too-many-nested-blocks,too-many-statements,redefined-builtin,protected-access'
+            pylint tap_snapchat_ads -d 'broad-except,chained-comparison,empty-docstring,fixme,invalid-name,line-too-long,missing-class-docstring,missing-function-docstring,missing-module-docstring,no-else-raise,no-else-return,too-few-public-methods,too-many-arguments,too-many-branches,too-many-lines,too-many-locals,ungrouped-imports,wrong-spelling-in-comment,wrong-spelling-in-docstring,logging-format-interpolation,too-many-nested-blocks,too-many-statements,redefined-builtin,protected-access,raise-missing-from'
       - run:
           name: 'JSON Validator'
           command: |
