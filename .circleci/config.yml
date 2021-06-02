@@ -10,7 +10,7 @@ jobs:
           command: |
             python3 -m venv /usr/local/share/virtualenvs/tap-snapchat-ads
             source /usr/local/share/virtualenvs/tap-snapchat-ads/bin/activate
-            pip install --upgrade pip
+            pip install -U 'pip<19.2'
             pip install .[dev]
       - run:
           name: 'pylint'
@@ -21,7 +21,7 @@ jobs:
           name: 'JSON Validator'
           command: |
             source /usr/local/share/virtualenvs/tap-tester/bin/activate
-            stitch-validate-json /usr/local/share/virtualenvs/tap-snapchat-ads/lib/python3.5/site-packages/tap_snapchat_ads/schemas/*.json
+            stitch-validate-json tap_snapchat_ads/schemas/*.json
       - add_ssh_keys
       # - run:
       #     name: 'Integration Tests'

@@ -106,11 +106,11 @@ def raise_for_error(response):
                 error_message = '{}, {}: {}'.format(status_code, error_code, debug_message)
                 LOGGER.error(error_message)
                 ex = get_exception_for_error_code(status_code)
-                raise ex(error_message)
+                raise ex(error_message) from error
             else:
-                raise SnapchatError(error)
-        except (ValueError, TypeError):
-            raise SnapchatError(error)
+                raise SnapchatError(error) from error
+        except (ValueError, TypeError) as err:
+            raise SnapchatError(err) from err
 
 class SnapchatClient: # pylint: disable=too-many-instance-attributes
     def __init__(self,
@@ -249,7 +249,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
             LOGGER.error('{}'.format(err))
             LOGGER.error('response.headers = {}'.format(response.headers))
             LOGGER.error('response.reason = {}'.format(response.reason))
-            raise Exception(err)
+            raise
 
         return response_json
 
