@@ -244,7 +244,7 @@ def sync_endpoint(
                 window_start_dt_str = remove_minutes_local(start_window, timezone)
                 window_end_dt_str = remove_minutes_local(end_window, timezone)
                 if window_start_dt_str == window_end_dt_str:
-                    window_end_dt_str = remove_hours_local(end_window + timedelta(
+                    window_end_dt_str = remove_minutes_local(end_window + timedelta(
                         hours=1), timezone)
 
             params[bookmark_query_field_from] = window_start_dt_str
