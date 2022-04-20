@@ -117,6 +117,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
                  client_id,
                  client_secret,
                  refresh_token,
+                 request_timeout,
                  user_agent=None):
         self.__client_id = client_id
         self.__client_secret = client_secret
@@ -125,6 +126,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
         self.__access_token = None
         self.__expires = None
         self.__session = requests.Session()
+        self.request_timeout = request_timeout
         self.base_url = '{}/{}'.format(API_URL, API_VERSION)
 
 
@@ -151,6 +153,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
 
         response = self.__session.post(
             url=SNAPCHAT_TOKEN_URL,
+            timeout=self.request_timeout, # timeout in seconds
             headers=headers,
             data={
                 'grant_type': 'refresh_token',
@@ -204,7 +207,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
             kwargs['headers']['Content-Type'] = 'application/json'
 
         with metrics.http_request_timer(endpoint) as timer:
-            response = self.__session.request(method, url, **kwargs)
+            response = self.__session.request(method, url, timeout=self.request_timeout, **kwargs)
             timer.tags[metrics.Tag.http_status_code] = response.status_code
 
         if response.status_code >= 500:

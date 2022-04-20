@@ -19,6 +19,8 @@ REQUIRED_CONFIG_KEYS = [
     'user_agent'
 ]
 
+REQUEST_TIMEOUT = 300 # 5 minutes default timeout
+
 def do_discover():
 
     LOGGER.info('Starting discover')
@@ -31,10 +33,20 @@ def do_discover():
 def main():
 
     parsed_args = singer.utils.parse_args(REQUIRED_CONFIG_KEYS)
+    
+    request_timeout = parsed_args.config.get('request_timeout')
+    
+    # if request_timeout is other than 0, "0" or "" then use request_timeout
+    if request_timeout and float(request_timeout):
+        request_timeout = float(request_timeout)
+    else: # If value is 0, "0" or "" then set the default which is 300 seconds.
+        request_timeout = REQUEST_TIMEOUT
+        
 
     with SnapchatClient(parsed_args.config['client_id'],
                         parsed_args.config['client_secret'],
                         parsed_args.config['refresh_token'],
+                        request_timeout,
                         parsed_args.config['user_agent']) as client:
 
         state = {}
