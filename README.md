@@ -160,7 +160,7 @@ Additional config parameters
 - `view_attribution_window`: Attribution window for views. 1_HOUR, 3_HOUR, 6_HOUR, 1_DAY (default), 7_DAY, 28_DAY.
 - `omit_empty` (true, false): Omits records with zero data for all metrics for a given date/entity. If there is data for any metric for a given date/entity, all metrics for that date/entity are returned. 
 - `targeting_country_codes`: Comma-delimeted lists of lower-case 2-letter ISO Country Codes for Ads Targeting.
-- `request_timeout`: To configure the timeout for twitter-ads client. Default is 300 seconds.
+- `request_timeout`: The time for which request should wait to get a response and the default request_timeout is 300 seconds.
 
 ## Quick Start
 
