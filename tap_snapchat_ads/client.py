@@ -3,10 +3,9 @@ from datetime import datetime, timedelta
 import time
 import backoff
 import requests
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, Timeout
 import singer
 from singer import metrics
-from requests.exceptions import Timeout
 
 
 API_URL = 'https://adsapi.snapchat.com'
@@ -130,12 +129,17 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
         self.__session = requests.Session()
         self.base_url = '{}/{}'.format(API_URL, API_VERSION)
 
+
         # if request_timeout is other than 0, "0" or "" then use request_timeout
         if request_timeout and float(request_timeout):
             self.request_timeout = float(request_timeout)
         else: # If value is 0, "0" or "" then set the default which is 300 seconds.
             self.request_timeout = REQUEST_TIMEOUT
 
+    @backoff.on_exception(backoff.expo,
+                          (ConnectionError, Timeout),
+                          max_tries=5,
+                          factor=2)
     def __enter__(self):
         self.get_access_token()
         return self
@@ -144,7 +148,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
         self.__session.close()
 
     @backoff.on_exception(backoff.expo,
-                          (Server5xxError, Timeout),
+                          Server5xxError,
                           max_tries=7,
                           factor=3)
     def get_access_token(self):
