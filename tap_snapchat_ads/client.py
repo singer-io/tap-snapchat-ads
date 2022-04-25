@@ -58,21 +58,40 @@ class SnapchatForbiddenError(SnapchatError):
     pass
 
 
-class SnapchatInternalServiceError(SnapchatError):
-    pass
-
 
 # Error Codes: https://developers.snapchat.com/api/docs/#errors
 ERROR_CODE_EXCEPTION_MAPPING = {
-    400: SnapchatBadRequestError,
-    401: SnapchatUnauthorizedError,
-    403: SnapchatForbiddenError,
-    404: SnapchatNotFoundError,
-    405: SnapchatMethodNotAllowedError,
-    406: SnapchatNotAcceptableError,
-    410: SnapchatGoneError,
-    418: SnapchatTeapotError,
-    500: SnapchatInternalServiceError}
+    400: {
+        "raise_exception": SnapchatBadRequestError, 
+        "message":"The request is missing or has a bad parameter."
+    },
+    401: {
+        "raise_exception": SnapchatUnauthorizedError, 
+        "message":"Unauthorized access for the URL."
+    },
+    403: {
+        "raise_exception": SnapchatForbiddenError, 
+        "message":"User does not have permission to access the resource."
+    },
+    404: {
+        "raise_exception": SnapchatNotFoundError, 
+        "message":"The resource you have specified cannot be found."
+    },
+    405: {
+        "raise_exception": SnapchatMethodNotAllowedError, 
+        "message":"The provided HTTP method is not supported by the URL."
+    },
+    406: {"raise_exception": SnapchatNotAcceptableError, 
+          "message":"You requested a format that isn’t json."
+    },
+    410: {
+        "raise_exception": SnapchatGoneError, 
+        "message":"Access to the Snapchat is no longer available."
+    },
+    418: {
+        "raise_exception": SnapchatTeapotError, 
+        "message":"The server refuses to brew coffee because it is, permanently, a teapot."
+    }}
 
 
 def get_exception_for_error_code(status_code):
@@ -104,8 +123,12 @@ def raise_for_error(response):
 
             if request_status == 'ERROR':
                 error_message = '{}, {}: {}'.format(status_code, error_code, debug_message)
-                LOGGER.error(error_message)
                 ex = get_exception_for_error_code(status_code)
+                if (ex != SnapchatClient):
+                    if bool(debug_message)==False:
+                        error_message = 'HTTP-error-code: {}, Message: {}'.format(status_code, ex["message"])
+                    ex = ex["raise_exception"]
+                LOGGER.error(error_message)
                 raise ex(error_message) from error
             else:
                 raise SnapchatError(error) from error
