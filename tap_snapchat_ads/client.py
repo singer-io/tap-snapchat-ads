@@ -129,8 +129,9 @@ def raise_for_error(response):
             error_message = '{}{}: {}'.format(status_code, error_code, debug_message)
             LOGGER.error(error_message)
             if status_code >= 500:
-                exception = Server5xxError(error_message)
-            exception = get_exception_for_error_code(status_code)
+                exception = Server5xxError
+            else:
+                exception = get_exception_for_error_code(status_code)
             raise exception(error_message) from error
         except (ValueError, TypeError) as err:
             raise SnapchatError(err) from err
