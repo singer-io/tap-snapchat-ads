@@ -13,10 +13,8 @@ API_VERSION = 'v1'
 SNAPCHAT_TOKEN_URL = 'https://accounts.snapchat.com/login/oauth2/access_token'
 LOGGER = singer.get_logger()
 
-
 class Server5xxError(Exception):
     pass
-
 
 class Server429Error(Exception):
     pass
@@ -58,6 +56,11 @@ class SnapchatForbiddenError(SnapchatError):
     pass
 
 
+class SnapchatInternalServiceError(SnapchatError):
+    pass
+
+class SnapchatServiceUnavailaleError(SnapchatError):
+    pass
 
 # Error Codes: https://developers.snapchat.com/api/docs/#errors
 ERROR_CODE_EXCEPTION_MAPPING = {
@@ -91,11 +94,24 @@ ERROR_CODE_EXCEPTION_MAPPING = {
     418: {
         "raise_exception": SnapchatTeapotError, 
         "message":"The server refuses to brew coffee because it is, permanently, a teapot."
+    },
+    429: {
+        "raise_exception": Server429Error,
+        "message": "You are requesting to many requests."
+    },
+    500: {
+        "raise_exception": SnapchatInternalServiceError,
+        "message": "Internal Server Error."
+    },
+    503: {
+        "raise_exception": SnapchatServiceUnavailaleError,
+        "message": "Service Unavailable."
     }}
 
 
+
 def get_exception_for_error_code(status_code):
-    return ERROR_CODE_EXCEPTION_MAPPING.get(status_code, SnapchatError)
+    return ERROR_CODE_EXCEPTION_MAPPING.get(status_code, {}).get("raise_exception", SnapchatError)
 
 # Error message example:
 # {
@@ -110,28 +126,18 @@ def raise_for_error(response):
         response.raise_for_status()
     except (requests.HTTPError, requests.ConnectionError) as error:
         try:
-            content_length = len(response.content)
-            if content_length == 0:
-                # There is nothing we can do here since Snapchat has neither sent
-                # us a 2xx response nor a response content.
-                return
-            response_json = response.json()
             status_code = response.status_code
-            request_status = response_json.get('request_status')
-            error_code = response_json.get('error_code')
-            debug_message = response_json.get('debug_message')
-
-            if request_status == 'ERROR':
-                error_message = '{}, {}: {}'.format(status_code, error_code, debug_message)
-                ex = get_exception_for_error_code(status_code)
-                if (ex != SnapchatClient):
-                    if bool(debug_message)==False:
-                        error_message = 'HTTP-error-code: {}, Message: {}'.format(status_code, ex["message"])
-                    ex = ex["raise_exception"]
-                LOGGER.error(error_message)
-                raise ex(error_message) from error
-            else:
-                raise SnapchatError(error) from error
+            response_json = response.json()
+            error_code = response_json.get('error_code', "")
+            if error_code:
+                error_code = ", " + error_code
+            debug_message = response_json.get('debug_message', response_json.get('error_description', ERROR_CODE_EXCEPTION_MAPPING.get(status_code, {}).get("message", "Unknown Error")))
+            error_message = '{}{}: {}'.format(status_code, error_code, debug_message)
+            LOGGER.error(error_message)
+            if status_code > 500 and status_code != 503:
+                exception = Server5xxError(error_message)
+            exception = get_exception_for_error_code(status_code)
+            raise exception(error_message) from error
         except (ValueError, TypeError) as err:
             raise SnapchatError(err) from err
 
@@ -159,7 +165,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
         self.__session.close()
 
     @backoff.on_exception(backoff.expo,
-                          Server5xxError,
+                          (SnapchatInternalServiceError, SnapchatServiceUnavailaleError, Server5xxError),
                           max_tries=7,
                           factor=3)
     def get_access_token(self):
@@ -182,9 +188,6 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
                 'refresh_token': self.__refresh_token,
             })
 
-        if response.status_code >= 500:
-            raise Server5xxError()
-
         if response.status_code != 200:
             raise_for_error(response)
 
@@ -196,7 +199,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
 
 
     @backoff.on_exception(backoff.expo,
-                          (Server5xxError, ConnectionError, Server429Error),
+                          (SnapchatInternalServiceError, SnapchatServiceUnavailaleError, ConnectionError, Server429Error, Server5xxError),
                           max_tries=7,
                           factor=3)
     def request(self, method, path=None, url=None, **kwargs):
@@ -230,9 +233,6 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
             response = self.__session.request(method, url, **kwargs)
             timer.tags[metrics.Tag.http_status_code] = response.status_code
 
-        if response.status_code >= 500:
-            raise Server5xxError()
-
         # Rate limits: https://developers.snapchat.com/api/docs/#rate-limits
         # Use retry functionality in backoff to wait and retry if
         # response code equals 429 because rate limit has been exceeded
@@ -254,12 +254,6 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
             wait_time = rate_limit_reset - int(time.time())
             LOGGER.warning('Waiting for {} seconds.'.format(wait_time))
             time.sleep(int(wait_time))
-
-        if response.status_code == 429:
-            raise Server429Error()
-
-        elif response.status_code >= 500:
-            raise Server5xxError()
 
         if response.status_code != 200:
             LOGGER.error('{}: {}'.format(response.status_code, response.text))
