@@ -56,6 +56,13 @@ class SnapchatForbiddenError(SnapchatError):
     pass
 
 
+class SnapchatInternalServiceError(Server5xxError):
+    pass
+
+class SnapchatServiceUnavailableError(Server5xxError):
+    pass
+
+
 # Error Codes: https://developers.snapchat.com/api/docs/#errors
 ERROR_CODE_EXCEPTION_MAPPING = {
     400: {
@@ -94,11 +101,11 @@ ERROR_CODE_EXCEPTION_MAPPING = {
         "message": "You are requesting to many requests."
     },
     500: {
-        "raise_exception": Server5xxError,
+        "raise_exception": SnapchatInternalServiceError,
         "message": "Internal Server Error."
     },
     503: {
-        "raise_exception": Server5xxError,
+        "raise_exception": SnapchatServiceUnavailableError,
         "message": "Service Unavailable."
     }}
 
@@ -128,7 +135,7 @@ def raise_for_error(response):
             debug_message = response_json.get('debug_message', response_json.get('error_description', ERROR_CODE_EXCEPTION_MAPPING.get(status_code, {}).get("message", "Unknown Error")))
             error_message = '{}{}: {}'.format(status_code, error_code, debug_message)
             LOGGER.error(error_message)
-            if status_code >= 500:
+            if status_code > 500 and status_code != 503:
                 exception = Server5xxError
             else:
                 exception = get_exception_for_error_code(status_code)
