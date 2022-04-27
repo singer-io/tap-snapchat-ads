@@ -193,7 +193,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
 
 
     @backoff.on_exception(backoff.expo,
-                          ( ConnectionError, Server429Error, Server5xxError),
+                          (Server5xxError, ConnectionError, Server429Error),
                           max_tries=7,
                           factor=3)
     def request(self, method, path=None, url=None, **kwargs):

@@ -226,7 +226,7 @@ class TestExceptionHandling(unittest.TestCase):
         """
         mocked_request.return_value = MockedResponse(500)
         clx = SnapchatClient("test", "test", "test", "test")
-        with self.assertRaises(client.SnapchatInternalServiceError) as e:
+        with self.assertRaises(client.Server5xxError) as e:
             clx.request('GET')
 
         self.assertEqual(str(e.exception), "500: Internal Server Error.")
@@ -239,7 +239,7 @@ class TestExceptionHandling(unittest.TestCase):
 
         mocked_request.return_value = MockedResponse(500, "This mesaage from response 500")
         clx = SnapchatClient("test", "test", "test", "test")
-        with self.assertRaises(client.SnapchatInternalServiceError) as e:
+        with self.assertRaises(client.Server5xxError) as e:
             clx.request('GET')
 
         self.assertEqual(str(e.exception), "500: This mesaage from response 500")
@@ -252,7 +252,7 @@ class TestExceptionHandling(unittest.TestCase):
         """
         mocked_request.return_value = MockedResponse(503)
         clx = SnapchatClient("test", "test", "test", "test")
-        with self.assertRaises(client.SnapchatServiceUnavailaleError) as e:
+        with self.assertRaises(client.Server5xxError) as e:
             clx.request('GET')
 
         self.assertEqual(str(e.exception), "503: Service Unavailable.")
@@ -265,7 +265,7 @@ class TestExceptionHandling(unittest.TestCase):
 
         mocked_request.return_value = MockedResponse(503, "This mesaage from response 503")
         clx = SnapchatClient("test", "test", "test", "test")
-        with self.assertRaises(client.SnapchatServiceUnavailaleError) as e:
+        with self.assertRaises(client.Server5xxError) as e:
             clx.request('GET')
 
         self.assertEqual(str(e.exception), "503: This mesaage from response 503")
