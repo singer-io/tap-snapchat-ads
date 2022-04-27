@@ -56,12 +56,6 @@ class SnapchatForbiddenError(SnapchatError):
     pass
 
 
-class SnapchatInternalServiceError(SnapchatError):
-    pass
-
-class SnapchatServiceUnavailaleError(SnapchatError):
-    pass
-
 # Error Codes: https://developers.snapchat.com/api/docs/#errors
 ERROR_CODE_EXCEPTION_MAPPING = {
     400: {
@@ -100,11 +94,11 @@ ERROR_CODE_EXCEPTION_MAPPING = {
         "message": "You are requesting to many requests."
     },
     500: {
-        "raise_exception": SnapchatInternalServiceError,
+        "raise_exception": Server5xxError,
         "message": "Internal Server Error."
     },
     503: {
-        "raise_exception": SnapchatServiceUnavailaleError,
+        "raise_exception": Server5xxError,
         "message": "Service Unavailable."
     }}
 
@@ -134,7 +128,7 @@ def raise_for_error(response):
             debug_message = response_json.get('debug_message', response_json.get('error_description', ERROR_CODE_EXCEPTION_MAPPING.get(status_code, {}).get("message", "Unknown Error")))
             error_message = '{}{}: {}'.format(status_code, error_code, debug_message)
             LOGGER.error(error_message)
-            if status_code > 500 and status_code != 503:
+            if status_code >= 500:
                 exception = Server5xxError(error_message)
             exception = get_exception_for_error_code(status_code)
             raise exception(error_message) from error
@@ -165,7 +159,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
         self.__session.close()
 
     @backoff.on_exception(backoff.expo,
-                          (SnapchatInternalServiceError, SnapchatServiceUnavailaleError, Server5xxError),
+                          Server5xxError,
                           max_tries=7,
                           factor=3)
     def get_access_token(self):
@@ -199,7 +193,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
 
 
     @backoff.on_exception(backoff.expo,
-                          (SnapchatInternalServiceError, SnapchatServiceUnavailaleError, ConnectionError, Server429Error, Server5xxError),
+                          ( ConnectionError, Server429Error, Server5xxError),
                           max_tries=7,
                           factor=3)
     def request(self, method, path=None, url=None, **kwargs):
