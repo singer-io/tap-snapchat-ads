@@ -164,7 +164,8 @@ def sync_endpoint(
     id_fields = endpoint_config.get('key_properties')
     parent = endpoint_config.get('parent')
     date_window_size = int(endpoint_config.get('date_window_size', '1'))
-
+    # Store parent_id into base_parent for bookmark writing
+    base_parent = parent_id
     # tap config variabless
     start_date = config.get('start_date')
     swipe_up_attribution_window = config.get('swipe_up_attribution_window', '28_DAY')
@@ -496,8 +497,9 @@ def sync_endpoint(
 
         # Update the state with the max_bookmark_value for the stream date window
         # Snapchat Ads API does not allow page/batch sorting; bookmark written for date window
+        # If current stream has children then parent_id value will be changed, so we are using base_parent for current stream's bookmark writing
         if bookmark_field and stream_name in selected_streams:
-            write_bookmark(state, stream_name, max_bookmark_value, bookmark_field, parent, parent_id)
+            write_bookmark(state, stream_name, max_bookmark_value, bookmark_field, parent, base_parent)
 
         # Increment date window and sum endpoint_total
         start_window = end_window
