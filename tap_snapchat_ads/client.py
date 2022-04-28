@@ -127,7 +127,10 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
         self.__session = requests.Session()
         self.base_url = '{}/{}'.format(API_URL, API_VERSION)
 
-
+    @backoff.on_exception(backoff.expo,
+                          (Server5xxError, Server429Error),
+                          max_tries=7,
+                          factor=3)
     def __enter__(self):
         self.get_access_token()
         return self
@@ -135,10 +138,6 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
     def __exit__(self, exception_type, exception_value, traceback):
         self.__session.close()
 
-    @backoff.on_exception(backoff.expo,
-                          Server5xxError,
-                          max_tries=7,
-                          factor=3)
     def get_access_token(self):
         # The refresh_token never expires and may be used many times to generate each access_token
         # Since the refresh_token does not expire, it is not included in get access_token response
@@ -161,6 +160,9 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
 
         if response.status_code >= 500:
             raise Server5xxError()
+
+        if response.status_code == 429:
+            raise Server429Error()
 
         if response.status_code != 200:
             raise_for_error(response)

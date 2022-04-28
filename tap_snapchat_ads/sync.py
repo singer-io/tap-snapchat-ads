@@ -164,6 +164,7 @@ def sync_endpoint(
     id_fields = endpoint_config.get('key_properties')
     parent = endpoint_config.get('parent')
     date_window_size = int(endpoint_config.get('date_window_size', '1'))
+    api_limit=int(config.get('page_size', 500)) # initially the 'limit' was 500
 
     # tap config variabless
     start_date = config.get('start_date')
@@ -271,7 +272,7 @@ def sync_endpoint(
             offset = 1
             page = 1
             if paging:
-                limit = 500 # Allowed values: 50 - 1000
+                limit = api_limit # Allowed values: 50 - 1000
                 params['limit'] = limit
             else:
                 limit = None
