@@ -70,8 +70,7 @@ STREAMS = {
             # Reference: https://developers.snapchat.com/api/docs/?python#get-all-roles-in-organization
             'roles': {
                 'key_properties': ['id'],
-                'replication_method': 'INCREMENTAL',
-                'replication_keys': ['updated_at'],
+                'replication_method': 'FULL_TABLE', # made 'Roles' stream as FULL_TABLE stream, as we are not getting 'updated_at' from the API response
                 'path': 'organizations/{parent_id}/roles',
                 'data_key_array': 'roles',
                 'data_key_record': 'role',
