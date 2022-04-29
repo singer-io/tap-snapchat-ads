@@ -31,7 +31,6 @@ class SnapchatAllFieldsTest(SnapchatBase):
             'source'
         },
         'ads': {
-            'third_party_swipe_tracking_urls',
             'paying_advertiser_name'
         },
         'targeting_android_versions': {

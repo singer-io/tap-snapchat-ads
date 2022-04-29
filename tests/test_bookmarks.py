@@ -7,7 +7,7 @@ from tap_tester import runner, connections, menagerie
 class SnapchatBookmarksTest(SnapchatBase):
 
     parent_child_mapping = {
-        # parent: child
+        # child: parent
         'funding_sources': 'organization',
         'billing_centers': 'organization',
         'members': 'organization',

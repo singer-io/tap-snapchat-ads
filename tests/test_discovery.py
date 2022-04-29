@@ -24,6 +24,7 @@ class SnapchatDiscoveryTest(SnapchatBase):
         - verify that all other fields have inclusion of available metadata.
         Verify all streams have inclusion of automatic
         """
+        # we have excluded '_stats_' streams from the base file for the test cases, but, we have to validate those in the discovery mode
         streams_to_test = self.expected_streams() | self.stats_streams
 
         conn_id = connections.ensure_connection(self)
