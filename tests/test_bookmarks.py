@@ -170,6 +170,10 @@ class SnapchatBookmarksTest(SnapchatBase):
                     self.assertEqual(second_sync_count, first_sync_count)
 
     def validate_records(self, stream, records_sync_1, records_sync_2, bookmark, second_start_date):
+        """
+            Validate the records from both syncs with bookmark in the state file
+            and verify we collected records from 1st state bookmark for 2nd sync
+        """
 
         # collect information specific to incremental streams from syncs 1 & 2
         replication_key = next(iter(self.expected_replication_keys()[stream]))

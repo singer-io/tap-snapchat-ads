@@ -24,9 +24,10 @@ class SnapchatPaginationTest(SnapchatBase):
         # pixels: not able to generate another record
         stream_to_skip = {"phone_numbers", "pixels"}
 
-        pagination_not_supported_fields = {"funding_sources", "members", "ad_account_stats_daily", "ad_account_stats_hourly", "pixel_domain_stats", "campaign_stats_daily", "campaign_stats_hourly", "ad_squad_stats_daily", "ad_squad_stats_hourly", "ad_stats_daily",  "ad_stats_hourly"}
+        # for this streams, page size is not supported for API calls
+        pagination_not_supported_streams = {"funding_sources", "members", "ad_account_stats_daily", "ad_account_stats_hourly", "pixel_domain_stats", "campaign_stats_daily", "campaign_stats_hourly", "ad_squad_stats_daily", "ad_squad_stats_hourly", "ad_stats_daily",  "ad_stats_hourly"}
 
-        paging_supported_streams = self.expected_streams() - pagination_not_supported_fields - stream_to_skip - known_failing_streams
+        paging_supported_streams = self.expected_streams() - pagination_not_supported_streams - stream_to_skip - known_failing_streams
 
         self.page_size = 1
         self.run_test(paging_supported_streams - {"targeting_device_makes", "targeting_postal_codes", "targeting_interests_nln", "targeting_advanced_demographics", "targeting_interests_dlxc", "targeting_countries", "targeting_regions", "targeting_ios_versions", "targeting_carriers", "targeting_metros", "targeting_interests_scls", "targeting_interests_dlxs", "targeting_interests_dlxp", "targeting_interests_plc", "targeting_location_categories"})
