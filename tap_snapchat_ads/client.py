@@ -85,8 +85,9 @@ ERROR_CODE_EXCEPTION_MAPPING = {
         "raise_exception": SnapchatMethodNotAllowedError, 
         "message":"The provided HTTP method is not supported by the URL."
     },
-    406: {"raise_exception": SnapchatNotAcceptableError, 
-          "message":"You requested a format that isn’t json."
+    406: {
+        "raise_exception": SnapchatNotAcceptableError, 
+        "message":"You requested a format that isn’t json."
     },
     410: {
         "raise_exception": SnapchatGoneError, 
@@ -102,12 +103,13 @@ ERROR_CODE_EXCEPTION_MAPPING = {
     },
     500: {
         "raise_exception": SnapchatInternalServiceError,
-        "message": "Internal Server Error."
+        "message": "An error has occurred at Snapchat's end."
     },
     503: {
         "raise_exception": SnapchatServiceUnavailableError,
-        "message": "Service Unavailable."
-    }}
+        "message": "API service is currently unavailable."
+    }
+}
 
 
 
