@@ -16,7 +16,7 @@ jobs:
           name: 'pylint'
           command: |
             source /usr/local/share/virtualenvs/tap-snapchat-ads/bin/activate
-            pylint tap_snapchat_ads -d 'C,W,R'
+            pylint tap_snapchat_ads -d C,W,R
       - run:
           name: 'JSON Validator'
           command: |
