@@ -30,7 +30,6 @@ def sync(client, config, catalog, state):
     # Get the streams to sync (based on dependencies)
     sync_streams = []
     # Loop thru all streams
-    # for stream_name, stream_metadata in flat_streams.items():
     for stream_name, stream_class  in STREAMS.items():
         # If stream has a parent_stream, then it is a child stream
         parent_stream = stream_class.parent_stream
@@ -52,7 +51,6 @@ def sync(client, config, catalog, state):
 
     # Loop through selected_streams
     # Loop through endpoints in selected_streams
-    # for stream_name, endpoint_config in STREAMS.items():
     for stream_name, stream_class in ROOT_STREAMS.items():
         if stream_name in sync_streams:
             stream_obj = stream_class()

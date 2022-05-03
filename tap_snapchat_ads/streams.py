@@ -55,6 +55,9 @@ class SnapchatAds:
 
     # To write schema in output
     def write_schema(self, catalog, stream_name):
+        """
+        To write schema in output
+        """
         stream = catalog.get_stream(stream_name)
         schema = stream.schema.to_dict()
         try:
@@ -65,6 +68,9 @@ class SnapchatAds:
 
     # To write record in output
     def write_record(self, stream_name, record, time_extracted):
+        """
+        To write records in sync mode
+        """
         try:
             singer.messages.write_record(stream_name, record, time_extracted=time_extracted)
         except OSError as err:
@@ -78,6 +84,9 @@ class SnapchatAds:
 
     # To get bookmark from state.json or config.json
     def get_bookmark(self, state, stream, default, bookmark_field=None, parent=None, parent_id=None):
+        """
+        Read bookmark from state.json or config.json
+        """
         if (state is None) or ('bookmarks' not in state):
             return default
 
@@ -98,6 +107,9 @@ class SnapchatAds:
 
     # To write new bookmark in output
     def write_bookmark(self, state, stream, value, bookmark_field=None, parent=None, parent_id=None):
+        """
+        To write bookmark in sync mode
+        """
         if parent and parent_id:
             key = '{}(parent_{}_id:{})'.format(bookmark_field, parent, parent_id)
         else:
@@ -114,7 +126,10 @@ class SnapchatAds:
 
     # To transform string to datetime 
     def transform_datetime(self, this_dttm):
-        import pdb; pdb.set_trace()
+        """
+        Convert string date to datetime object
+        """
+        
         with Transformer() as transformer:
             new_dttm = transformer._transform_datetime(this_dttm)
         return new_dttm
@@ -127,6 +142,9 @@ class SnapchatAds:
                         bookmark_field=None,
                         max_bookmark_value=None,
                         last_datetime=None):
+        """
+        To process record in sync mode
+        """
         stream = catalog.get_stream(stream_name)
         schema = stream.schema.to_dict()
         stream_metadata = metadata.to_map(stream.metadata)
@@ -156,12 +174,10 @@ class SnapchatAds:
 
                         # Keep only records whose bookmark is after the last_datetime
                         if bookmark_dttm >= last_dttm:
-                            # LOGGER.info('record1: {}'.format(record)) # TESTING, comment out
                             self.write_record(stream_name, transformed_record, \
                                 time_extracted=time_extracted)
                             counter.increment()
                     else:
-                        # LOGGER.info('record2: {}'.format(record)) # TESTING, comment out
                         self.write_record(stream_name, transformed_record, time_extracted=time_extracted)
                         counter.increment()
 
@@ -170,12 +186,18 @@ class SnapchatAds:
 
     # To reset minutes in local
     def remove_minutes_local(self, dttm, timezone):
+        """
+        To reset minutes to zero
+        """
         new_dttm = dttm.astimezone(timezone).replace(
             minute=0, second=0, microsecond=0).astimezone(pytz.timezone('UTC')).strftime('%Y-%m-%dT%H:%M:%SZ')
         return new_dttm
 
     # To reset hours in local
     def remove_hours_local(self, dttm, timezone):
+        """
+        To reset hours to zero
+        """
         new_dttm = dttm.astimezone(timezone).replace(
             hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.timezone('UTC')).strftime('%Y-%m-%dT%H:%M:%SZ')
         return new_dttm
@@ -193,6 +215,10 @@ class SnapchatAds:
             selected_streams,
             timezone_desc=None,
             parent_id=None):
+        
+        """
+        To sync all streams (i.e. parent and child stream)
+        """
 
         # endpoint_config variables
         base_path = stream_class.path or stream_name
@@ -366,7 +392,6 @@ class SnapchatAds:
 
                     # Transform data with transform_json from transform.py
                     # The data_key_array identifies the array/list of records below the <root> element
-                    # LOGGER.info('data = {}'.format(data)) # TESTING, comment out
                     transformed_data = [] # initialize the record list
 
                     # Reports stats streams de-nesting
@@ -391,7 +416,6 @@ class SnapchatAds:
                                     transformed_record = humps.decamelize(record)
                                 except Exception as err:
                                     LOGGER.error('{}'.format(err))
-                                    # LOGGER.error('error record: {}'.format(record)) # COMMENT OUT
                                     raise
 
                                 # verify primary_keys are in tansformed_record
@@ -457,7 +481,6 @@ class SnapchatAds:
                             # End for data_record in array
                         # End non-stats stream
 
-                    # LOGGER.info('transformed_data = {}'.format(transformed_data)) # COMMENT OUT
                     if not transformed_data or transformed_data is None:
                         LOGGER.info('No transformed data for data = {}'.format(data))
                         total_records = 0
@@ -658,7 +681,6 @@ class AdAccountStatsDaily(SnapchatAds):
     paging = False
     parent = 'ad_account'
     params = {
-        # 'test': 'true', # COMMENT OUT
         'fields': 'spend',
         'granularity': 'DAY',
         'omit_empty': 'false',
@@ -685,7 +707,6 @@ class AdAccountStatsHourly(SnapchatAds):
     paging = False
     parent = 'ad_account'
     params = {
-        # 'test': 'true', # COMMENT OUT
         'fields': 'spend',
         'granularity': 'HOUR',
         'omit_empty': 'false',
@@ -729,7 +750,7 @@ class Pixels(SnapchatAds):
 class PixelDomainStats(SnapchatAds):
     tap_stream_id = 'pixel_domain_stats'
     great_grandparent_stream = 'organizations'
-    grandparent_stream = 'ad_account'
+    grandparent_stream = 'ad_accounts'
     parent_stream = 'pixels'
     key_properties = ['id']
     replication_method = 'FULL_TABLE'
@@ -820,7 +841,6 @@ class CampaignStatsDaily(SnapchatAds):
     paging = False
     parent = 'campaign'
     params = {
-        # 'test': 'true', # COMMENT OUT
         'fields': ALL_STATS_FIELDS,
         'granularity': 'DAY',
         'omit_empty': 'false',
@@ -848,7 +868,6 @@ class CampaignStatsHourly(SnapchatAds):
     paging = False
     parent = 'campaign'
     params = {
-        # 'test': 'true', # COMMENT OUT
         'fields': ALL_STATS_FIELDS,
         'granularity': 'HOUR',
         'omit_empty': 'false',
@@ -892,7 +911,6 @@ class AdSquadStatsDaily(SnapchatAds):
     paging = False
     parent = 'ad_squad'
     params = {
-        # 'test': 'true', # COMMENT OUT
         'fields': ALL_STATS_FIELDS,
         'granularity': 'DAY',
         'omit_empty': 'false',
@@ -920,7 +938,6 @@ class AdSquadStatsHourly(SnapchatAds):
     paging = False
     parent = 'ad_squad'
     params = {
-        # 'test': 'true', # COMMENT OUT
         'fields': ALL_STATS_FIELDS,
         'granularity': 'HOUR',
         'omit_empty': 'false',
@@ -964,7 +981,6 @@ class AdStatsDaily(SnapchatAds):
     paging = False
     parent = 'ad'
     params = {
-        # 'test': 'true', # COMMENT OUT
         'fields': ALL_STATS_FIELDS,
         'granularity': 'DAY',
         'omit_empty': 'false',
@@ -992,7 +1008,6 @@ class AdStatsHourly(SnapchatAds):
     paging = False
     parent = 'ad'
     params = {
-        # 'test': 'true', # COMMENT OUT
         'fields': ALL_STATS_FIELDS,
         'granularity': 'HOUR',
         'omit_empty': 'false',
