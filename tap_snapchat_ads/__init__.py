@@ -7,7 +7,7 @@ import singer
 from singer import metadata, utils
 from tap_snapchat_ads.client import SnapchatClient
 from tap_snapchat_ads.discover import discover
-from tap_snapchat_ads.sync import sync
+from tap_snapchat_ads.sync import sync as _sync
 
 LOGGER = singer.get_logger()
 
@@ -48,7 +48,7 @@ def main():
         if parsed_args.discover:
             do_discover()
         elif parsed_args.catalog:
-            sync(client=client,
+            _sync(client=client,
                  config=config,
                  catalog=parsed_args.catalog,
                  state=state)
