@@ -229,7 +229,7 @@ class TestExceptionHandling(unittest.TestCase):
         with self.assertRaises(client.Server5xxError) as e:
             clx.request('GET')
 
-        self.assertEqual(str(e.exception), "500: Internal Server Error.")
+        self.assertEqual(str(e.exception), "500: An error has occurred at Snapchat's end.")
 
     @mock.patch("time.sleep")   
     def test_500_error_response_message(self, mocked_time, mocked_request):
@@ -255,7 +255,7 @@ class TestExceptionHandling(unittest.TestCase):
         with self.assertRaises(client.Server5xxError) as e:
             clx.request('GET')
 
-        self.assertEqual(str(e.exception), "503: Service Unavailable.")
+        self.assertEqual(str(e.exception), "503: API service is currently unavailable.")
 
     @mock.patch("time.sleep")   
     def test_503_error_response_message(self, mocked_time, mocked_request):
