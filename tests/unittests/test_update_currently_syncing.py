@@ -1,0 +1,158 @@
+import unittest
+from unittest import mock
+from tap_snapchat_ads.client import SnapchatClient
+from tap_snapchat_ads.streams import SnapchatAds
+
+currently_syncing_list = []
+
+class DummySnapchatAds:
+    """Dummy SnapchatAds class"""
+
+    tap_stream_id = None
+    key_properties = []
+    replication_method = None
+    replication_keys = []
+    path = None
+    data_key_array = None
+    data_key_record = ""
+    paging = False
+    params = {}
+    parent_stream = None
+    parent = None
+    grandparent_stream = None
+    great_grandparent_stream = None
+    json_schema = None
+    bookmark_query_field_from = None
+    bookmark_query_field_to = None
+    date_window_size = 1
+    targeting_country_ind = False
+    targeting_group = None
+    targeting_type = None
+    children = []
+
+class Organizations(DummySnapchatAds):
+    """Dummy Organization class"""
+
+    key_properties = ["id"]
+    replication_keys = ["updated_at"]
+    data_key_array = "organizations"
+    data_key_record = "organization"
+    children = ["ad_accounts"]
+    stream = "organizations"
+
+class AdAccounts(DummySnapchatAds):
+    """Dummy AdAccounts class"""
+
+    key_properties = ["id"]
+    replication_keys = ["updated_at"]
+    data_key_array = "adaccounts"
+    data_key_record = "adaccount"
+    parent = "organization"
+    children = ["pixels"]
+    stream = "ad_accounts"
+
+class Pixels(DummySnapchatAds):
+    """Dummy Pixels class"""
+
+    key_properties = ["id"]
+    replication_keys = ["updated_at"]
+    data_key_array = "pixels"
+    data_key_record = "pixel"
+    parent = "ad_account"
+    stream = "pixels"
+
+def mock_process_records(*args, **kwargs):
+    """Mocking the process_records function"""
+    # return date and record count
+    return "2022-04-16T00:00:00Z", 1
+
+def mock_get(*args, **kwargs):
+    """Mocked get function to return the endpoint specific values"""
+
+    endpoint = kwargs.get("endpoint")
+
+    if endpoint == "organizations":
+        return {
+            "request_status": "SUCCESS",
+            "organizations": [{"sub_request_status": "SUCCESS","organization": {"id": "organization_id"}}]
+        }
+    if endpoint == "ad_accounts":
+        return {
+            "request_status": "SUCCESS",
+            "adaccounts": [{"sub_request_status": "SUCCESS","adaccount": {"id": "ad_account_id"}}]
+        }
+    if endpoint == "pixels":
+        return {
+            "request_status": "SUCCESS",
+            "pixels": [{"sub_request_status": "SUCCESS","pixel": {"id": "pixel_id"}}]
+        }
+
+def mock_currently_sync(*args, **kwargs):
+    """Mocked currently syncing to store currently syncing stream"""
+    # store currently syncing for assertion
+    currently_syncing_list.append(args[1])
+
+@mock.patch("tap_snapchat_ads.client.SnapchatClient.get_access_token")
+@mock.patch("tap_snapchat_ads.client.SnapchatClient.get", side_effect=mock_get)
+@mock.patch("tap_snapchat_ads.streams.SnapchatAds.process_records", side_effect=mock_process_records)
+@mock.patch("tap_snapchat_ads.streams.SnapchatAds.write_schema")
+@mock.patch("singer.metadata.to_map")
+@mock.patch("tap_snapchat_ads.streams.update_currently_syncing", side_effect=mock_currently_sync)
+class TestCurrentlySyncing(unittest.TestCase):
+    """Class to test currently syncing streams"""
+
+    def test_currently_syncing_with_parent(self, mocked_currently_syncing, mocked_metadata, mocked_schema, mocked_process_records, mock_get, mocked_get_access_token):
+        """Test currently syncing stream when single parent and it"s child is present"""
+
+        # create SnapchatClient
+        client = SnapchatClient(client_id="id", client_secret="secret", refresh_token="token")
+        # config
+        config = {"start_date": "2021-01-01T00:00:00Z"}
+        # all streams streams other than "targeting" streams, syncing will start from "organizations"
+        stream_name = "organizations"
+        # selected stream is "ad_accounts"
+        selected_streams = ["ad_accounts"]
+        # List of all the streams need to be synced
+        sync_streams = ["organizations","ad_accounts"]
+        # dummy organization object
+        organization = Organizations
+
+        # create SnapchatAds stream object and call sync_endpoint
+        stream_obj = SnapchatAds()
+        stream_obj.sync_endpoint(client, config, {}, {}, stream_name, organization, sync_streams, selected_streams)
+
+        # create expected streams to for which currently syncing is to be written
+        expected_syncing_streams = ["ad_accounts"]
+        # verify currently syncing is written for expected streams
+        self.assertEqual(expected_syncing_streams, currently_syncing_list)
+
+        # clear currently syncing list
+        currently_syncing_list.clear()
+
+    def test_currently_syncing_with_grand_parent(self, mocked_currently_syncing, mocked_metadata, mocked_schema, mocked_process_records, mock_get, mocked_get_access_token):
+        """Test currently syncing stream when parent, it"s child and child"s child is present"""
+
+        # create SnapchatClient
+        client = SnapchatClient(client_id="id", client_secret="secret", refresh_token="token")
+        # config
+        config = {"start_date": "2021-01-01T00:00:00Z"}
+        # all streams streams other than "targeting" streams, syncing will start from "organizations"
+        stream_name = "organizations"
+        # selected stream is "ad_accounts"
+        selected_streams = ["pixels"]
+        # List of all the streams need to be synced
+        sync_streams = ["organizations", "ad_accounts", "pixels"]
+        # dummy organization object
+        organization = Organizations
+
+        # create SnapchatAds stream object and call sync_endpoint
+        stream_obj = SnapchatAds()
+        stream_obj.sync_endpoint(client, config, {}, {}, stream_name, organization, sync_streams, selected_streams)
+
+        # create expected streams to for which currently syncing is to be written
+        expected_syncing_streams = ["ad_accounts", "pixels"]
+        # verify currently syncing is written for expected streams
+        self.assertEqual(expected_syncing_streams, currently_syncing_list)
+
+        # clear currently syncing list
+        currently_syncing_list.clear()
