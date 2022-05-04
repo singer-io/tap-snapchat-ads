@@ -1,65 +1,9 @@
 import unittest
 from unittest import mock
 from tap_snapchat_ads.client import SnapchatClient
-from tap_snapchat_ads.streams import SnapchatAds
+from tap_snapchat_ads.streams import SnapchatAds, Organizations
 
 currently_syncing_list = []
-
-class DummySnapchatAds:
-    """Dummy SnapchatAds class"""
-
-    tap_stream_id = None
-    key_properties = []
-    replication_method = None
-    replication_keys = []
-    path = None
-    data_key_array = None
-    data_key_record = ""
-    paging = False
-    params = {}
-    parent_stream = None
-    parent = None
-    grandparent_stream = None
-    great_grandparent_stream = None
-    json_schema = None
-    bookmark_query_field_from = None
-    bookmark_query_field_to = None
-    date_window_size = 1
-    targeting_country_ind = False
-    targeting_group = None
-    targeting_type = None
-    children = []
-
-class Organizations(DummySnapchatAds):
-    """Dummy Organization class"""
-
-    key_properties = ["id"]
-    replication_keys = ["updated_at"]
-    data_key_array = "organizations"
-    data_key_record = "organization"
-    children = ["ad_accounts"]
-    stream = "organizations"
-
-class AdAccounts(DummySnapchatAds):
-    """Dummy AdAccounts class"""
-
-    key_properties = ["id"]
-    replication_keys = ["updated_at"]
-    data_key_array = "adaccounts"
-    data_key_record = "adaccount"
-    parent = "organization"
-    children = ["pixels"]
-    stream = "ad_accounts"
-
-class Pixels(DummySnapchatAds):
-    """Dummy Pixels class"""
-
-    key_properties = ["id"]
-    replication_keys = ["updated_at"]
-    data_key_array = "pixels"
-    data_key_record = "pixel"
-    parent = "ad_account"
-    stream = "pixels"
 
 def mock_process_records(*args, **kwargs):
     """Mocking the process_records function"""
