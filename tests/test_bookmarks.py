@@ -48,10 +48,11 @@ class SnapchatBookmarksTest(SnapchatBase):
         - The number of records in the 2nd sync is less then the first
         """
 
-        conn_id = connections.ensure_connection(self)
+        self.START_DATE = "2020-01-01T00:00:00Z"
+        conn_id = connections.ensure_connection(self, original_properties=False)
         runner.run_check_mode(self, conn_id)
 
-        expected_streams = self.expected_streams()
+        expected_streams = self.expected_streams() - self.stats_streams
 
         found_catalogs = self.run_and_verify_check_mode(conn_id)
         self.select_found_catalogs(conn_id, found_catalogs, only_streams=expected_streams)
@@ -69,14 +70,13 @@ class SnapchatBookmarksTest(SnapchatBase):
         new_state = copy.deepcopy(first_sync_bookmarks)
         # add state for bookmark stored for streams in 1st sync
         for stream, bookmark_dict in first_sync_bookmarks.get('bookmarks').items():
-            if self.is_incremental(stream):
-                for key, value in bookmark_dict.items():
-                    # this checks if we replicated any record as start date has format '%Y-%m-%dT%H:%M:%SZ'
-                    try:
-                        second_start_date = (datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%fZ') - timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-                        new_state['bookmarks'][stream][key] = second_start_date
-                    except ValueError:
-                        new_state['bookmarks'][stream][key] = value
+            for key, value in bookmark_dict.items():
+                # this checks if we have replicated any records for a parent id
+                if value != self.START_DATE:
+                    second_start_date = (datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%fZ') - timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                    new_state['bookmarks'][stream][key] = second_start_date
+                else:
+                    new_state['bookmarks'][stream][key] = value
 
         # Set state for next sync
         menagerie.set_state(conn_id, new_state)
@@ -120,11 +120,11 @@ class SnapchatBookmarksTest(SnapchatBase):
                     #       "updated_at(parent_organization_id:organization-id-123)": "2020-01-01T00:00:00Z"
                     #   }
                     for key, value in first_bookmark_key_value.items():
-                        # partial split
-                        partial_splitted = key.split('parent_')
-
-                        # if the length of split is greater than 1, the bookmark is child stream
-                        if len(partial_splitted) > 1:
+                        # if the current stream is child stream, then we need to process bookmark for assertion
+                        parent_stream = self.parent_child_mapping.get(stream)
+                        if parent_stream:
+                            # partial split
+                            partial_splitted = key.split('parent_')
                             splitted = partial_splitted[1].split(':')
                             # parent value
                             parent_value = splitted[0]
@@ -132,7 +132,7 @@ class SnapchatBookmarksTest(SnapchatBase):
                             parent_record = splitted[1][:-1]
 
                             # verify the parent in the bookmark is as expected
-                            self.assertEqual(parent_value, self.parent_child_mapping.get(stream) + '_id')
+                            self.assertEqual(parent_value, parent_stream + '_id')
 
                             # collect parent ids
                             parent_ids = []
@@ -140,27 +140,27 @@ class SnapchatBookmarksTest(SnapchatBase):
                                 parent_ids.append(parent_rec.get('id'))
 
                             # verify the id in the bookmark is present in the parent ids
-                            self.assertTrue(parent_record in parent_ids, 'The bookmark contains other \'id\' rather than parent\'s \'id\'')
+                            self.assertIn(parent_record, parent_ids, f'The bookmark contains other \'id\': {parent_record} rather than parent\'s \'id\': {parent_ids}')
 
                             records_sync_1 = []
                             records_sync_2 = []
 
                             # collect records for a particular parent id from the stream for both syncs
                             for record in first_sync_messages:
-                                if parent_record == record.get(parent_value):
+                                if parent_record == record.get(f"{parent_stream}_id"):
                                     records_sync_1.append(record)
                             for record in second_sync_messages:
-                                if parent_record == record.get(parent_value):
+                                if parent_record == record.get(f"{parent_stream}_id"):
                                     records_sync_2.append(record)
                         else:
                             # as the stream is not child stream, no need to pre-process the records
                             records_sync_1 = first_sync_messages
                             records_sync_2 = second_sync_messages
 
-                        second_start_date = new_state['bookmarks'][stream][key]
+                        bookmark_date_for_2nd_sync = new_state['bookmarks'][stream][key]
 
                         # validate records
-                        self.validate_records(stream, records_sync_1, records_sync_2, value, second_start_date)
+                        self.validate_records(stream, records_sync_1, records_sync_2, value, bookmark_date_for_2nd_sync)
                 else:
                     # Verify the syncs do not set a bookmark for full table streams
                     self.assertIsNone(first_bookmark_key_value)
@@ -169,7 +169,7 @@ class SnapchatBookmarksTest(SnapchatBase):
                     # Verify the number of records in the second sync is the same as the first
                     self.assertEqual(second_sync_count, first_sync_count)
 
-    def validate_records(self, stream, records_sync_1, records_sync_2, bookmark, second_start_date):
+    def validate_records(self, stream, records_sync_1, records_sync_2, state_file_bookmark, bookmark_date_for_2nd_sync):
         """
             Validate the records from both syncs with bookmark in the state file
             and verify we collected records from 1st state bookmark for 2nd sync
@@ -177,10 +177,10 @@ class SnapchatBookmarksTest(SnapchatBase):
 
         # collect information specific to incremental streams from syncs 1 & 2
         replication_key = next(iter(self.expected_replication_keys()[stream]))
-        bookmark_value_parsed = parse(bookmark).strftime('%Y-%m-%dT%H:%M:%SZ')
+        bookmark_value_parsed = parse(state_file_bookmark).strftime('%Y-%m-%dT%H:%M:%SZ')
 
         # Verify the first sync sets a bookmark of the expected form
-        self.assertIsNotNone(bookmark)
+        self.assertIsNotNone(state_file_bookmark)
 
         for record in records_sync_2:
 
@@ -193,10 +193,10 @@ class SnapchatBookmarksTest(SnapchatBase):
             )
 
             # Verify the data of the second sync is greater-equal to the bookmark from the first sync
-            # We have added 'second_start_date' as the bookmark, it is more recent than
+            # We have added 'bookmark_date_for_2nd_sync' as the bookmark, it is more recent than
             #   the default start date and it will work as a simulated bookmark
             self.assertGreaterEqual(
-                replication_key_value_parsed, parse(second_start_date).strftime('%Y-%m-%dT%H:%M:%SZ'),
+                replication_key_value_parsed, parse(bookmark_date_for_2nd_sync).strftime('%Y-%m-%dT%H:%M:%SZ'),
                 msg='Sync did not respect the bookmark, a record with a smaller replication-key value was synced.'
             )
 

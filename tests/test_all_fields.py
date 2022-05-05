@@ -31,7 +31,8 @@ class SnapchatAllFieldsTest(SnapchatBase):
             'source'
         },
         'ads': {
-            'paying_advertiser_name'
+            'paying_advertiser_name',
+            'third_party_swipe_tracking_urls'
         },
         'targeting_android_versions': {
             'country_code',
@@ -173,7 +174,7 @@ class SnapchatAllFieldsTest(SnapchatBase):
         - Verify no unexpected streams were replicated
         - Verify that more than just the automatic fields are replicated for each stream
         """
-        expected_streams = self.expected_streams()
+        expected_streams = self.expected_streams() - self.stats_streams
 
         # instantiate connection
         conn_id = connections.ensure_connection(self)

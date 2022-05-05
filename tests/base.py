@@ -142,16 +142,7 @@ class SnapchatBase(unittest.TestCase):
 
     def expected_streams(self):
         """A set of expected stream names"""
-        # account violation in publishing ads, hence, not able to generate any records
-        return set(self.expected_metadata().keys()) - self.stats_streams
-
-    def child_streams(self):
-        """
-        Return a set of streams that are child streams
-        based on having foreign key metadata
-        """
-        return {stream for stream, metadata in self.expected_metadata().items()
-                if metadata.get(self.FOREIGN_KEYS)}
+        return set(self.expected_metadata().keys())
 
     def expected_primary_keys(self):
         """
@@ -257,20 +248,3 @@ class SnapchatBase(unittest.TestCase):
     def is_incremental(self, stream):
         """Boolean function to check is the stream is INCREMENTAL of not"""
         return self.expected_metadata()[stream][self.REPLICATION_METHOD] == self.INCREMENTAL
-
-    def timedelta_formatted(self, dtime, days=0):
-        try:
-            date_stripped = dt.strptime(dtime, self.START_DATE_FORMAT)
-            return_date = date_stripped + timedelta(days=days)
-
-            return dt.strftime(return_date, self.START_DATE_FORMAT)
-
-        except ValueError:
-            try:
-                date_stripped = dt.strptime(dtime, self.BOOKMARK_COMPARISON_FORMAT)
-                return_date = date_stripped + timedelta(days=days)
-
-                return dt.strftime(return_date, self.BOOKMARK_COMPARISON_FORMAT)
-
-            except ValueError:
-                return Exception("Datetime object is not of the format: {}".format(self.START_DATE_FORMAT))

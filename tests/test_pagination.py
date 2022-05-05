@@ -25,18 +25,25 @@ class SnapchatPaginationTest(SnapchatBase):
         stream_to_skip = {"phone_numbers", "pixels"}
 
         # for this streams, page size is not supported for API calls
-        pagination_not_supported_streams = {"funding_sources", "members", "ad_account_stats_daily", "ad_account_stats_hourly", "pixel_domain_stats", "campaign_stats_daily", "campaign_stats_hourly", "ad_squad_stats_daily", "ad_squad_stats_hourly", "ad_stats_daily",  "ad_stats_hourly"}
+        pagination_not_supported_streams = {"funding_sources", "members"} | self.stats_streams
 
-        paging_supported_streams = self.expected_streams() - pagination_not_supported_streams - stream_to_skip - known_failing_streams
+        streams_with_50_page_size = {"targeting_advanced_demographics", "targeting_interests_dlxc", "targeting_countries", "targeting_regions", "targeting_ios_versions", "targeting_carriers", "targeting_metros", "targeting_interests_scls", "targeting_interests_dlxs", "targeting_interests_dlxp", "targeting_interests_plc", "targeting_location_categories"}
+        streams_with_1000_page_size = {"targeting_device_makes", "targeting_postal_codes", "targeting_interests_nln"}
+        streams_with_1_page_size = {"product_sets", "organizations", "targeting_connection_types", "creatives", "ad_squads", "targeting_os_types", "media", "ads", "product_catalogs", "billing_centers", "targeting_genders", "audience_segments", "targeting_languages", "targeting_age_groups", "roles", "ad_accounts", "campaigns"}
+
+        # verify all the stream are either skipped or tested
+        self.assertEqual(
+            self.expected_streams() - known_failing_streams - stream_to_skip - pagination_not_supported_streams,
+            streams_with_1_page_size | streams_with_50_page_size | streams_with_1000_page_size)
 
         self.page_size = 1
-        self.run_test(paging_supported_streams - {"targeting_device_makes", "targeting_postal_codes", "targeting_interests_nln", "targeting_advanced_demographics", "targeting_interests_dlxc", "targeting_countries", "targeting_regions", "targeting_ios_versions", "targeting_carriers", "targeting_metros", "targeting_interests_scls", "targeting_interests_dlxs", "targeting_interests_dlxp", "targeting_interests_plc", "targeting_location_categories"})
+        self.run_test(streams_with_1_page_size)
 
         self.page_size = 50
-        self.run_test({"targeting_advanced_demographics", "targeting_interests_dlxc", "targeting_countries", "targeting_regions", "targeting_ios_versions", "targeting_carriers", "targeting_metros", "targeting_interests_scls", "targeting_interests_dlxs", "targeting_interests_dlxp", "targeting_interests_plc", "targeting_location_categories"})
+        self.run_test(streams_with_50_page_size)
 
         self.page_size = 1000
-        self.run_test({"targeting_device_makes", "targeting_postal_codes", "targeting_interests_nln"})
+        self.run_test(streams_with_1000_page_size)
 
     def run_test(self, streams):
         """
@@ -58,7 +65,7 @@ class SnapchatPaginationTest(SnapchatBase):
         actual_fields_by_stream = runner.examine_target_output_for_fields()
         sync_records = runner.get_records_from_target_output()
 
-        for stream in expected_streams - {"organizations"}:
+        for stream in expected_streams:
             with self.subTest(stream=stream):
 
                 # verify that we can paginate with all fields selected
@@ -67,28 +74,26 @@ class SnapchatPaginationTest(SnapchatBase):
                 self.assertGreater(record_count_by_stream.get(stream, -1), minimum_record_count,
                     msg="The number of records is not over the stream max limit")
 
-                expected_pk = self.expected_primary_keys()
+                expected_primary_key = self.expected_primary_keys().get(stream, set())
                 sync_messages = sync_records.get(stream, {'messages': []}).get('messages')
+                expected_replication_key = self.expected_replication_keys().get(stream, set())
+                expected_automatic_fields = expected_primary_key | expected_replication_key
 
                 # verify that the automatic fields are sent to the target
                 if stream != "roles":
                     self.assertTrue(
-                        actual_fields_by_stream.get(stream, set()).issuperset(
-                            expected_pk.get(stream, set()) |
-                            self.expected_replication_keys().get(stream, set())),
+                        actual_fields_by_stream.get(stream, set()).issuperset(expected_automatic_fields),
                         msg="The fields sent to the target don't include all automatic fields"
                     )
 
                 # verify we have more fields sent to the target than just automatic fields
                 self.assertTrue(
-                    actual_fields_by_stream.get(stream, set()).symmetric_difference(
-                        expected_pk.get(stream, set()) |
-                        self.expected_replication_keys().get(stream, set())),
+                    actual_fields_by_stream.get(stream, set()).symmetric_difference(expected_automatic_fields),
                     msg="The fields sent to the target don't include non-automatic fields"
                 )
 
                 # Verify we did not duplicate any records across pages
-                records_pks_list = [tuple([message.get('data').get(primary_key) for primary_key in expected_pk.get(stream, set())])
+                records_pks_list = [tuple([message.get('data').get(primary_key) for primary_key in expected_primary_key])
                                     for message in sync_messages]
 
                 self.assertCountEqual(records_pks_list, set(records_pks_list), msg=f"We have duplicate records for {stream}")
