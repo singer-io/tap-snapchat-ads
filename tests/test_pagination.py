@@ -80,11 +80,10 @@ class SnapchatPaginationTest(SnapchatBase):
                 expected_automatic_fields = expected_primary_key | expected_replication_key
 
                 # verify that the automatic fields are sent to the target
-                if stream != "roles":
-                    self.assertTrue(
-                        actual_fields_by_stream.get(stream, set()).issuperset(expected_automatic_fields),
-                        msg="The fields sent to the target don't include all automatic fields"
-                    )
+                self.assertTrue(
+                    actual_fields_by_stream.get(stream, set()).issuperset(expected_automatic_fields),
+                    msg="The fields sent to the target don't include all automatic fields"
+                )
 
                 # verify we have more fields sent to the target than just automatic fields
                 self.assertTrue(

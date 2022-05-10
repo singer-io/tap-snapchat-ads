@@ -12,13 +12,11 @@ class SnapchatStartDateTest(SnapchatBase):
         # funding_sources: need to payment method
         # pixels: not able to generate another record
         streams_with_one_records = {"funding_sources", "phone_numbers", "pixels"}
-        # replication key issue
-        stream_having_issue = {"roles"}
 
         expected_streams_1 = {"organizations", "ad_accounts", "audience_segments", "product_catalogs", "product_sets", "campaigns"}
         expected_streams_2 = {"billing_centers"}
         expected_streams_3 = {"members"}
-        expected_streams_4 = self.expected_streams() - self.stats_streams - streams_with_one_records - stream_having_issue - expected_streams_1 - expected_streams_2 - expected_streams_3
+        expected_streams_4 = self.expected_streams() - self.stats_streams - streams_with_one_records - expected_streams_1 - expected_streams_2 - expected_streams_3
 
         self.run_test(expected_streams_1, "2021-01-01T00:00:00Z", "2022-04-21T00:00:00Z")
         self.run_test(expected_streams_2, "2022-04-01T00:00:00Z", "2022-04-28T00:00:00Z")

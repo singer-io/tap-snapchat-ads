@@ -3,79 +3,73 @@ from base import SnapchatBase
 
 class SnapchatAllFieldsTest(SnapchatBase):
 
-    # fields which is data is not generated
     fields_to_remove = {
-        'media': {
-            'lens_package_metadata'
+        # fields for which data is not generated
+        'ad_accounts': {
+            'lifetime_spend_cap_micro'
         },
-        'targeting_ios_versions': {
-            'country_code',
-            'parent_id',
-            'path',
-            'source'
-        },
-        'targeting_device_makes': {
-            'country_code',
-            'parent_id',
-            'path',
-            'source'
-        },
-        'roles': {
-            'updated_at',
-            'created_at'
-        },
-        'targeting_os_types': {
-            'country_code',
-            'parent_id',
-            'path',
-            'source'
+        'ad_squads': {
+            'bid_micro',
+            'cap_and_exclusion_config',
+            'impression_goal',
+            'lifetime_budget_micro',
+            'placement_v2',
+            'product_properties',
+            'reach_and_frequency_micro',
+            'reach_and_frequency_status',
+            'reach_goal'
         },
         'ads': {
             'paying_advertiser_name',
             'third_party_swipe_tracking_urls'
         },
-        'targeting_android_versions': {
-            'country_code',
-            'parent_id',
-            'path',
-            'source'
+        'creatives': {
+            'ad_to_lens_properties',
+            'ad_to_message_properties',
+            'app_install_properties',
+            'collection_properties',
+            'composite_properties',
+            'deep_link_properties',
+            'dynamic_render_properties',
+            'longform_video_properties',
+            'playback_type',
+            'preview_creative_id',
+            'preview_properties'
         },
-        'targeting_postal_codes': {
-            'parent_id',
-            'path',
-            'source'
+        'funding_sources': {
+            'available_credit_micro',
+            'budget_spent_micro',
+            'currency',
+            'email',
+            'end_date',
+            'start_date',
+            'total_budget_micro',
+            'value_micro'
         },
-        'targeting_languages': {
-            'country_code',
-            'parent_id',
-            'path',
-            'source'
+        'media': {
+            'lens_package_metadata'
         },
-        'targeting_regions': {
-            'city',
-            'metro',
-            'source',
-            'path',
-            'parent_id'
+        # cannot publish pixels, thus not able to get 'effective_status' of the pixel
+        'pixels': {
+            'effective_status'
         },
-        'targeting_interests_nln': {
-            'country_code'
+        # These fields are not being replicated from the API, and it is confirmed by the support
+        'roles': {
+            'created_at',
+            'updated_at'
         },
-        'targeting_metros': {
-            'city',
-            'source',
-            'path',
-            'parent_id',
-            'region'
-        },
-        'targeting_interests_dlxc': {
-            'country_code',
-            'parent_id'
-        },
-        'targeting_interests_dlxp': {
+        # All the streams with 'targeting_*' contains a general schema structure
+        # for all the stream. So, all streams will not contain all the fields.
+        'targeting_advanced_demographics': {
             'country_code'
         },
         'targeting_age_groups': {
+            'country_code',
+            'parent_id',
+            'path',
+            'source'
+        },
+        'targeting_android_versions': {
             'country_code',
             'parent_id',
             'path',
@@ -87,65 +81,59 @@ class SnapchatAllFieldsTest(SnapchatBase):
             'path',
             'source'
         },
-        'targeting_interests_scls': {
+        'targeting_connection_types': {
+            'country_code',
+            'parent_id',
+            'path',
+            'source'
+        },
+        'targeting_countries': {
+            'city',
+            'country_code',
+            'metro',
+            'parent_id',
+            'path',
+            'region',
+            'source'
+        },
+        'targeting_device_makes': {
+            'country_code',
+            'parent_id',
+            'path',
+            'source'
+        },
+        'targeting_genders': {
+            'country_code',
+            'parent_id',
+            'path',
+            'source'
+        },
+        'targeting_interests_dlxc': {
+            'country_code',
+            'parent_id'
+        },
+        'targeting_interests_dlxp': {
             'country_code'
         },
         'targeting_interests_dlxs': {
             'country_code'
         },
+        'targeting_interests_nln': {
+            'country_code'
+        },
         'targeting_interests_plc': {
             'country_code'
         },
-        'creatives': {
-            'composite_properties',
-            'ad_to_lens_properties',
-            'playback_type',
-            'ad_to_message_properties',
-            'app_install_properties',
-            'collection_properties',
-            'preview_properties',
-            'dynamic_render_properties',
-            'preview_creative_id',
-            'longform_video_properties',
-            'deep_link_properties'
-        },
-        'targeting_advanced_demographics': {
+        'targeting_interests_scls': {
             'country_code'
         },
-        'funding_sources': {
-            'currency',
-            'email',
-            'total_budget_micro',
-            'start_date',
-            'end_date',
-            'budget_spent_micro',
-            'available_credit_micro',
-            'value_micro'
-        },
-        'ad_squads': {
-            'product_properties',
-            'lifetime_budget_micro',
-            'impression_goal',
-            'placement_v2',
-            'bid_micro',
-            'reach_goal',
-            'cap_and_exclusion_config',
-            'reach_and_frequency_status',
-            'reach_and_frequency_micro'
-        },
-        'targeting_countries': {
-            'city',
-            'metro',
-            'source',
-            'path',
-            'parent_id',
+        'targeting_ios_versions': {
             'country_code',
-            'region'
+            'parent_id',
+            'path',
+            'source'
         },
-        'ad_accounts': {
-            'lifetime_spend_cap_micro'
-        },
-        'targeting_genders': {
+        'targeting_languages': {
             'country_code',
             'parent_id',
             'path',
@@ -154,11 +142,27 @@ class SnapchatAllFieldsTest(SnapchatBase):
         'targeting_location_categories': {
             'country_code'
         },
-        'pixels': {
-            'effective_status'
+        'targeting_metros': {
+            'city',
+            'parent_id',
+            'path',
+            'region',
+            'source'
         },
-        'targeting_connection_types': {
+        'targeting_os_types': {
             'country_code',
+            'parent_id',
+            'path',
+            'source'
+        },
+        'targeting_postal_codes': {
+            'parent_id',
+            'path',
+            'source'
+        },
+        'targeting_regions': {
+            'city',
+            'metro',
             'parent_id',
             'path',
             'source'
