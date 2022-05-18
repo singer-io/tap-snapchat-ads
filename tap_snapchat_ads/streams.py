@@ -237,6 +237,7 @@ class SnapchatAds:
         id_fields = stream_class.key_properties
         parent = stream_class.parent
         date_window_size = int(stream_class.date_window_size)
+        api_limit = int(config.get('page_size', 500)) # initially the 'limit' was 500
 
         # tap config variabless
         start_date = config.get('start_date')
@@ -344,7 +345,7 @@ class SnapchatAds:
                 offset = 1
                 page = 1
                 if paging:
-                    limit = 500 # Allowed values: 50 - 1000
+                    limit = api_limit # Allowed values: 50 - 1000
                     params['limit'] = limit
                 else:
                     limit = None
@@ -642,8 +643,7 @@ class Roles(SnapchatAds):
     tap_stream_id = 'roles'
     parent_stream = 'organizations'
     key_properties = ['id']
-    replication_method = 'INCREMENTAL'
-    replication_keys = ['updated_at']
+    replication_method = 'FULL_TABLE'
     path = 'organizations/{parent_id}/roles'
     data_key_array = 'roles'
     data_key_record = 'role'

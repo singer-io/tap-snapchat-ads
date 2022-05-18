@@ -110,7 +110,7 @@ class TestRequestTimeoutBackoff(unittest.TestCase):
             pass
 
         # verify that we backoff for 5 times
-        self.assertEqual(mocked_request.call_count, 5)
+        self.assertEqual(mocked_request.call_count, 7)
         
         
     def test_request_connection_error_for_Snapchat_client(self,  mocked_request, mocked_sleep):
@@ -126,5 +126,5 @@ class TestRequestTimeoutBackoff(unittest.TestCase):
             pass
 
         # verify that we backoff for 5 times
-        self.assertEqual(mocked_request.call_count, 5)
+        self.assertEqual(mocked_request.call_count, 7)
         

@@ -131,7 +131,12 @@ def raise_for_error(response):
     except (requests.HTTPError, requests.ConnectionError) as error:
         try:
             status_code = response.status_code
-            response_json = response.json()
+            # get json response if present, some status codes does not contains json response, thus set to empty if not found
+            try:
+                response_json = response.json()
+            except Exception:
+                response_json = {}
+
             error_code = response_json.get('error_code', "")
             if error_code:
                 error_code = ", " + error_code
@@ -170,9 +175,9 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
             self.request_timeout = REQUEST_TIMEOUT
 
     @backoff.on_exception(backoff.expo,
-                          (ConnectionError, Timeout),
-                          max_tries=5,
-                          factor=2)
+                          (ConnectionError, Timeout, Server5xxError, Server429Error),
+                          max_tries=7,
+                          factor=3)
     def __enter__(self):
         self.get_access_token()
         return self
@@ -180,10 +185,6 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
     def __exit__(self, exception_type, exception_value, traceback):
         self.__session.close()
 
-    @backoff.on_exception(backoff.expo,
-                          Server5xxError,
-                          max_tries=7,
-                          factor=3)
     def get_access_token(self):
         # The refresh_token never expires and may be used many times to generate each access_token
         # Since the refresh_token does not expire, it is not included in get access_token response
