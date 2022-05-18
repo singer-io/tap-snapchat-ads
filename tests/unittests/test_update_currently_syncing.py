@@ -43,7 +43,7 @@ class TestCurrentlySyncing(unittest.TestCase):
         """Test currently syncing stream when single parent and it"s child is present"""
 
         # create SnapchatClient
-        client = SnapchatClient(client_id="id", client_secret="secret", refresh_token="token")
+        client = SnapchatClient(client_id="id", client_secret="secret", refresh_token="token", request_timeout=300)
         # config
         config = {"start_date": "2021-01-01T00:00:00Z"}
         # all streams streams other than "targeting" streams, syncing will start from "organizations"
@@ -70,7 +70,7 @@ class TestCurrentlySyncing(unittest.TestCase):
         """Test currently syncing stream when parent, it"s child and child"s child is present"""
 
         # create SnapchatClient
-        client = SnapchatClient(client_id="id", client_secret="secret", refresh_token="token")
+        client = SnapchatClient(client_id="id", client_secret="secret", refresh_token="token", request_timeout=300)
         # config
         config = {"start_date": "2021-01-01T00:00:00Z"}
         # all streams streams other than "targeting" streams, syncing will start from "organizations"

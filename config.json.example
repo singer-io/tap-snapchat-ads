@@ -7,5 +7,6 @@
   "omit_empty": "true",
   "targeting_country_codes": "us, ca, mx",
   "start_date": "2020-01-01T00:00:00Z",
-  "user_agent": "tap-snapchat-ads <api_user_email@example.com>"
+  "user_agent": "tap-snapchat-ads <api_user_email@example.com>",
+  "request_timeout": 300,
 }

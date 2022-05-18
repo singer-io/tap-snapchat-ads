@@ -35,7 +35,7 @@ def sync(client, config, catalog, state):
             if grandparent_stream and grandparent_stream not in sync_streams:
                 sync_streams.append(grandparent_stream)
             if great_grandparent_stream and great_grandparent_stream not in sync_streams:
-                sync_streams.append(grandparent_stream)
+                sync_streams.append(great_grandparent_stream)
     LOGGER.info('Sync Streams: {}'.format(sync_streams))
 
     # Loop through selected_streams
@@ -44,7 +44,7 @@ def sync(client, config, catalog, state):
         if stream_name in sync_streams:
             stream_obj = stream_class()
             LOGGER.info('START Syncing: {}'.format(stream_name))
-            stream_obj.write_schema(catalog, stream_name)
+            stream_obj.write_schema(catalog, stream_name, sync_streams, selected_streams)
             update_currently_syncing(state, stream_name)
 
             total_records = stream_obj.sync_endpoint(
