@@ -19,7 +19,11 @@ def sync(client, config, catalog, state):
     # Get the streams to sync (based on dependencies)
     sync_streams = []
     # Loop thru all streams
-    for stream_name, stream_class  in STREAMS.items():
+    for stream_name, stream_class in STREAMS.items():
+        # only sync streams from last stream ie. 'currently_syncing' stream
+        if last_stream and last_stream != stream_name:
+            continue
+        last_stream = None
         # If stream has a parent_stream, then it is a child stream
         parent_stream = stream_class.parent_stream
         grandparent_stream = stream_class.grandparent_stream
