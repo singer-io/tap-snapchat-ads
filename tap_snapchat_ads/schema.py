@@ -35,6 +35,12 @@ def get_schemas():
             valid_replication_keys=stream_class.replication_keys or None,
             replication_method=stream_class.replication_method or None
         )
-        field_metadata[stream_name] = mdata
+
+        mdata_map = metadata.to_map(mdata)
+        # update inclusion of "replication keys" as "automatic"
+        for replication_key in (stream_class.replication_keys or []):
+            mdata_map[('properties', replication_key)]['inclusion'] = 'automatic'
+
+        field_metadata[stream_name] = metadata.to_list(mdata_map)
 
     return schemas, field_metadata

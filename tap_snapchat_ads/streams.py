@@ -54,14 +54,16 @@ class SnapchatAds:
     children = []
 
     # To write schema in output
-    def write_schema(self, catalog, stream_name):
+    def write_schema(self, catalog, stream_name, sync_streams , selected_streams):
         """
         To write schema in output
         """
         stream = catalog.get_stream(stream_name)
         schema = stream.schema.to_dict()
         try:
-            singer.write_schema(stream_name, schema, stream.key_properties)
+            # Write_schema for the stream if it is selected in catalog
+            if stream_name in selected_streams and stream_name in sync_streams:
+                singer.write_schema(stream_name, schema, stream.key_properties)
         except OSError as err:
             LOGGER.error('OS Error writing schema for: {}'.format(stream_name))
             raise err
@@ -237,6 +239,7 @@ class SnapchatAds:
         date_window_size = int(stream_class.date_window_size)
         # Store parent_id into base_parent for bookmark writing
         base_parent = parent_id
+        api_limit = int(config.get('page_size', 500)) # initially the 'limit' was 500
 
         # tap config variabless
         start_date = config.get('start_date')
@@ -344,7 +347,7 @@ class SnapchatAds:
                 offset = 1
                 page = 1
                 if paging:
-                    limit = 500 # Allowed values: 50 - 1000
+                    limit = api_limit # Allowed values: 50 - 1000
                     params['limit'] = limit
                 else:
                     limit = None
@@ -488,8 +491,9 @@ class SnapchatAds:
                         total_records = 0
                         break # No transformed_data results
 
-                    # Process records and get the max_bookmark_value and record_count
-                    if stream_name in sync_streams:
+                    # Process records and get the max_bookmark_value and record_count if stream is selected in catalog
+                    record_count = 0
+                    if stream_name in selected_streams and stream_name in sync_streams:
                         max_bookmark_value, record_count = self.process_records(
                             catalog=catalog,
                             stream_name=stream_name,
@@ -507,7 +511,7 @@ class SnapchatAds:
                         for child_stream_name in children:
                             if child_stream_name in sync_streams:
                                 LOGGER.info('START Syncing: {}'.format(child_stream_name))
-                                self.write_schema(catalog, child_stream_name)
+                                self.write_schema(catalog, child_stream_name, sync_streams, selected_streams)
                                 # For each parent record
                                 for record in transformed_data:
                                     i = 0
@@ -642,8 +646,7 @@ class Roles(SnapchatAds):
     tap_stream_id = 'roles'
     parent_stream = 'organizations'
     key_properties = ['id']
-    replication_method = 'INCREMENTAL'
-    replication_keys = ['updated_at']
+    replication_method = 'FULL_TABLE'
     path = 'organizations/{parent_id}/roles'
     data_key_array = 'roles'
     data_key_record = 'role'

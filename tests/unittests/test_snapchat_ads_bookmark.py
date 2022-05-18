@@ -1,11 +1,24 @@
-from singer import utils
+from tap_snapchat_ads.sync import sync
 import json
-import humps
 import unittest
 from unittest import mock
-import tap_snapchat_ads
-from tap_snapchat_ads.client import LOGGER, SnapchatClient
-from tap_snapchat_ads.streams import SnapchatAds
+from tap_snapchat_ads.client import SnapchatClient
+
+class MockStream:
+    def __init__(self, stream):
+        self.stream = stream
+
+# mock class for Catalog
+class MockCatalog:
+    def __init__(self, streams):
+        self.streams = streams
+
+    # mock class for get_stream
+    def get_selected_streams(self, *args, **kwargs):
+        streams = []
+        for stream in self.streams:
+            streams.append(MockStream(stream))
+        return streams
 
 def mocked_process_records(catalog, stream_name, records, time_extracted, bookmark_field, max_bookmark_value, last_datetime):
     """Mocking the process_records function"""
@@ -38,32 +51,22 @@ def mocked_get(*args, **kwargs):
 
 @mock.patch("tap_snapchat_ads.client.SnapchatClient.get_access_token")
 @mock.patch("tap_snapchat_ads.client.SnapchatClient.get",side_effect=mocked_get)
-@mock.patch("tap_snapchat_ads.sync.write_schema")
-@mock.patch("tap_snapchat_ads.sync.process_records", side_effect=mocked_process_records)
+@mock.patch("tap_snapchat_ads.streams.SnapchatAds.write_schema")
+@mock.patch("tap_snapchat_ads.streams.SnapchatAds.process_records", side_effect=mocked_process_records)
 @mock.patch("singer.metadata.to_map")
 class TestBookmark(unittest.TestCase):
     """Class to test the bookmark write for different scenarios"""
 
+    client = SnapchatClient(client_id="id", client_secret="secret", refresh_token="token", request_timeout=300)
+    config = {"start_date": "2021-01-01T00:00:00Z"}
+
     def test_bookmark_no_parent(self, mocked_metadata, mocked_process_record, mocked_schema, mocked_client_get, mocked_access_token):
         """Test bookmark write when no parent is in the endpoint """
+        state = {}
 
-        client = SnapchatClient(client_id="id", client_secret="secret", refresh_token="token")
-        dummy_config = {"start_date": "2021-01-01T00:00:00Z"}
-        stream_name = "organizations"
-        dummy_catalog = {}
-        dummy_state = {}
-        sync_streams = ["organizations"]
-        selected_streams = ["organizations"]
-        endpoint_config = {
-            "data_key_record": "organization",
-            "replication_keys": ["updated_at"],
-            "data_key_array": "organizations",
-            "key_properties": ["id"],
-        }
-
-        SnapchatAds.sync_endpoint(client, dummy_config, dummy_catalog, dummy_state, stream_name, endpoint_config, sync_streams, selected_streams)
+        sync(self.client, self.config, MockCatalog(['organizations']), state)
         expected_bookmark = '{"bookmarks": {"organizations": {"updated_at": "2022-04-16T05:44:39.787000Z"}}}'
-        state = json.dumps(dummy_state)
+        state = json.dumps(state)
         
         # Check whether bookmark is written as expected
         self.assertEqual(state, expected_bookmark, "Not getting expected bookmark value")
@@ -71,78 +74,24 @@ class TestBookmark(unittest.TestCase):
 
     def test_bookmark_with_parent(self, mocked_metadata, mocked_process_record, mocked_schema, mocked_client_get, mocked_access_token):
         """Test bookmark write when one parent and it's child is there in the endpoint"""
+        state = {}
 
-        client = SnapchatClient(client_id="id", client_secret="secret", refresh_token="token")
-        dummy_config = {"start_date": "2021-01-01T00:00:00Z"}
-        stream_name = "organizations"
-        dummy_catalog = {}
-        dummy_state = {}
-        sync_streams = ["organizations", "ad_accounts"]
-        selected_streams = ["organizations", "ad_accounts"]
-        endpoint_config = {
-            "data_key_record": "organization",
-            "replication_keys": ["updated_at"],
-            "data_key_array": "organizations",
-            "key_properties": ["id"],
-            'children':{
-                'ad_accounts':{
-                    "data_key_record": "adaccount",
-                    "replication_keys": ["updated_at"],
-                    "data_key_array": "adaccounts",
-                    "key_properties": ["id"],
-                    'parent':'organizations'
-                }
-            }
-        }
+        sync(self.client, self.config, MockCatalog(['organizations', 'ad_accounts']), state)
 
-        SnapchatAds.sync_endpoint(client, dummy_config, dummy_catalog, dummy_state, stream_name, endpoint_config, sync_streams, selected_streams)
+        expected_bookmark = '{"bookmarks": {"ad_accounts": {"updated_at(parent_organization_id:organization_id)": "2022-04-16T05:44:39.787000Z"}, "organizations": {"updated_at": "2022-04-16T05:44:39.787000Z"}}}'
+        state = json.dumps(state)
 
-        expected_bookmark = '{"bookmarks": {"ad_accounts": {"updated_at(parent_organizations_id:organization_id)": "2022-04-16T05:44:39.787000Z"}, "organizations": {"updated_at": "2022-04-16T05:44:39.787000Z"}}}'
-        state = json.dumps(dummy_state)
-        
         # Check whether bookmark is written as expected
         self.assertEqual(state, expected_bookmark, "Not getting expected bookmark value")
 
     def test_bookmark_with_grand_parent(self, mocked_metadata, mocked_process_record, mocked_schema, mocked_client_get, mocked_access_token):
         """Test bookmark write when grandparent, it's child and child's child are there in the endpoint"""
+        state = {}
 
-        client = SnapchatClient(client_id="id", client_secret="secret", refresh_token="token")
-        dummy_config = {"start_date": "2021-01-01T00:00:00Z"}
-        stream_name = "organizations"
-        dummy_catalog = {}
-        dummy_state = {}
-        sync_streams = ["organizations", "ad_accounts", "pixels"]
-        selected_streams = ["organizations", "ad_accounts", "pixels"]
-        endpoint_config = {
-            "data_key_record": "organization",
-            "replication_keys": ["updated_at"],
-            "data_key_array": "organizations",
-            "key_properties": ["id"],
-            'children':{
-                'ad_accounts':{
-                    "data_key_record": "adaccount",
-                    "replication_keys": ["updated_at"],
-                    "data_key_array": "adaccounts",
-                    "key_properties": ["id"],
-                    'parent':'organizations',
-                    'children':{
-                        'pixels':{
-                            "data_key_record": "adaccount",
-                            "replication_keys": ["updated_at"],
-                            "data_key_array": "adaccounts",
-                            "key_properties": ["id"],
-                            'parent':'ad_accounts'
-                        }
-                    }
-                    
-                }
-            }
-        }
+        sync(self.client, self.config, MockCatalog(['organizations', 'ad_accounts', 'pixels']), state)
 
-        SnapchatAds.sync_endpoint(client, dummy_config, dummy_catalog, dummy_state, stream_name, endpoint_config, sync_streams, selected_streams)
-
-        expected_bookmark = '{"bookmarks": {"pixels": {"updated_at(parent_ad_accounts_id:adaccount_id)": "2021-01-01T00:00:00Z"}, "ad_accounts": {"updated_at(parent_organizations_id:organization_id)": "2022-04-16T05:44:39.787000Z"}, "organizations": {"updated_at": "2022-04-16T05:44:39.787000Z"}}}'
-        state = json.dumps(dummy_state)
+        expected_bookmark = '{"bookmarks": {"pixels": {"updated_at(parent_ad_account_id:adaccount_id)": "2022-04-16T05:44:39.787000Z"}, "ad_accounts": {"updated_at(parent_organization_id:organization_id)": "2022-04-16T05:44:39.787000Z"}, "organizations": {"updated_at": "2022-04-16T05:44:39.787000Z"}}}'
+        state = json.dumps(state)
 
         # Check whether bookmark is written as expected
         self.assertEqual(state,expected_bookmark, "Not getting expected bookmark value")
