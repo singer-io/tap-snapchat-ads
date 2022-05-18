@@ -96,7 +96,7 @@ class SnapchatBase(unittest.TestCase):
             "funding_sources": incremental_metadata,
             "billing_centers": incremental_metadata,
             "members": incremental_metadata,
-            "roles": incremental_metadata,
+            "roles": full_table_metadata,
             "ad_accounts": incremental_metadata,
             "ad_account_stats_daily": stats_metadata,
             "ad_account_stats_hourly": stats_metadata,
