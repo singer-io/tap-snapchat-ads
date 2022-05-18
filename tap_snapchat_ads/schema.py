@@ -2,7 +2,7 @@ import os
 import json
 import singer
 from singer import metadata
-from tap_snapchat_ads.streams import flatten_streams
+from tap_snapchat_ads.streams import STREAMS
 
 LOGGER = singer.get_logger()
 
@@ -16,12 +16,9 @@ def get_schemas():
     schemas = {}
     field_metadata = {}
 
-    flat_streams = flatten_streams()
-    # LOGGER.info('flat_streams = {}'.format(flat_streams))
-
-    for stream_name, stream_metadata in flat_streams.items():
+    for stream_name, stream_class in STREAMS.items():
         base_schema_path = 'schemas/{}.json'.format(stream_name)
-        schema_file_path = stream_metadata.get('json_schema', base_schema_path)
+        schema_file_path = stream_class.json_schema or base_schema_path
         schema_path = get_abs_path(schema_file_path)
         with open(schema_path) as file:
             schema = json.load(file)
@@ -34,9 +31,9 @@ def get_schemas():
         # https://github.com/singer-io/singer-python/blob/master/singer/metadata.py#L25-L44
         mdata = metadata.get_standard_metadata(
             schema=schema,
-            key_properties=stream_metadata.get('key_properties', None),
-            valid_replication_keys=stream_metadata.get('replication_keys', None),
-            replication_method=stream_metadata.get('replication_method', None)
+            key_properties=stream_class.key_properties or None,
+            valid_replication_keys=stream_class.replication_keys or None,
+            replication_method=stream_class.replication_method or None
         )
         field_metadata[stream_name] = mdata
 
