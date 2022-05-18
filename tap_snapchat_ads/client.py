@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import time
 import backoff
 import requests
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, Timeout
 import singer
 from singer import metrics
 
@@ -11,6 +11,7 @@ from singer import metrics
 API_URL = 'https://adsapi.snapchat.com'
 API_VERSION = 'v1'
 SNAPCHAT_TOKEN_URL = 'https://accounts.snapchat.com/login/oauth2/access_token'
+REQUEST_TIMEOUT = 300 # 5 minutes default timeout
 LOGGER = singer.get_logger()
 
 
@@ -117,6 +118,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
                  client_id,
                  client_secret,
                  refresh_token,
+                 request_timeout,
                  user_agent=None):
         self.__client_id = client_id
         self.__client_secret = client_secret
@@ -128,6 +130,16 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
         self.base_url = '{}/{}'.format(API_URL, API_VERSION)
 
 
+        # if request_timeout is other than 0, "0" or "" then use request_timeout
+        if request_timeout and float(request_timeout):
+            self.request_timeout = float(request_timeout)
+        else: # If value is 0, "0" or "" then set the default which is 300 seconds.
+            self.request_timeout = REQUEST_TIMEOUT
+
+    @backoff.on_exception(backoff.expo,
+                          (ConnectionError, Timeout),
+                          max_tries=5,
+                          factor=2)
     def __enter__(self):
         self.get_access_token()
         return self
@@ -151,6 +163,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
 
         response = self.__session.post(
             url=SNAPCHAT_TOKEN_URL,
+            timeout=self.request_timeout, # timeout in seconds
             headers=headers,
             data={
                 'grant_type': 'refresh_token',
@@ -173,7 +186,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
 
 
     @backoff.on_exception(backoff.expo,
-                          (Server5xxError, ConnectionError, Server429Error),
+                          (Server5xxError, ConnectionError, Server429Error, Timeout),
                           max_tries=7,
                           factor=3)
     def request(self, method, path=None, url=None, **kwargs):
@@ -204,7 +217,7 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
             kwargs['headers']['Content-Type'] = 'application/json'
 
         with metrics.http_request_timer(endpoint) as timer:
-            response = self.__session.request(method, url, **kwargs)
+            response = self.__session.request(method, url, timeout=self.request_timeout, **kwargs)
             timer.tags[metrics.Tag.http_status_code] = response.status_code
 
         if response.status_code >= 500:
