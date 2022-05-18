@@ -5,7 +5,7 @@ import unittest
 from unittest import mock
 import tap_snapchat_ads
 from tap_snapchat_ads.client import LOGGER, SnapchatClient
-from tap_snapchat_ads.sync import sync_endpoint
+from tap_snapchat_ads.streams import SnapchatAds
 
 def mocked_process_records(catalog, stream_name, records, time_extracted, bookmark_field, max_bookmark_value, last_datetime):
     """Mocking the process_records function"""
@@ -61,7 +61,7 @@ class TestBookmark(unittest.TestCase):
             "key_properties": ["id"],
         }
 
-        sync_endpoint(client, dummy_config, dummy_catalog, dummy_state, stream_name, endpoint_config, sync_streams, selected_streams)
+        SnapchatAds.sync_endpoint(client, dummy_config, dummy_catalog, dummy_state, stream_name, endpoint_config, sync_streams, selected_streams)
         expected_bookmark = '{"bookmarks": {"organizations": {"updated_at": "2022-04-16T05:44:39.787000Z"}}}'
         state = json.dumps(dummy_state)
         
@@ -95,7 +95,7 @@ class TestBookmark(unittest.TestCase):
             }
         }
 
-        sync_endpoint(client, dummy_config, dummy_catalog, dummy_state, stream_name, endpoint_config, sync_streams, selected_streams)
+        SnapchatAds.sync_endpoint(client, dummy_config, dummy_catalog, dummy_state, stream_name, endpoint_config, sync_streams, selected_streams)
 
         expected_bookmark = '{"bookmarks": {"ad_accounts": {"updated_at(parent_organizations_id:organization_id)": "2022-04-16T05:44:39.787000Z"}, "organizations": {"updated_at": "2022-04-16T05:44:39.787000Z"}}}'
         state = json.dumps(dummy_state)
@@ -139,7 +139,7 @@ class TestBookmark(unittest.TestCase):
             }
         }
 
-        sync_endpoint(client, dummy_config, dummy_catalog, dummy_state, stream_name, endpoint_config, sync_streams, selected_streams)
+        SnapchatAds.sync_endpoint(client, dummy_config, dummy_catalog, dummy_state, stream_name, endpoint_config, sync_streams, selected_streams)
 
         expected_bookmark = '{"bookmarks": {"pixels": {"updated_at(parent_ad_accounts_id:adaccount_id)": "2021-01-01T00:00:00Z"}, "ad_accounts": {"updated_at(parent_organizations_id:organization_id)": "2022-04-16T05:44:39.787000Z"}, "organizations": {"updated_at": "2022-04-16T05:44:39.787000Z"}}}'
         state = json.dumps(dummy_state)
