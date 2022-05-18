@@ -16,8 +16,6 @@ def get_schemas():
     schemas = {}
     field_metadata = {}
 
-    # LOGGER.info('flat_streams = {}'.format(flat_streams))
-
     for stream_name, stream_class in STREAMS.items():
         base_schema_path = 'schemas/{}.json'.format(stream_name)
         schema_file_path = stream_class.json_schema or base_schema_path
