@@ -237,6 +237,8 @@ class SnapchatAds:
         id_fields = stream_class.key_properties
         parent = stream_class.parent
         date_window_size = int(stream_class.date_window_size)
+        # Store parent_id into base_parent for bookmark writing
+        base_parent = parent_id
         api_limit = int(config.get('page_size', 500)) # initially the 'limit' was 500
 
         # tap config variabless
@@ -568,8 +570,9 @@ class SnapchatAds:
 
             # Update the state with the max_bookmark_value for the stream date window
             # Snapchat Ads API does not allow page/batch sorting; bookmark written for date window
+            # If current stream has children then parent_id value will be changed, so we are using base_parent for current stream's bookmark writing
             if bookmark_field and stream_name in selected_streams:
-                self.write_bookmark(state, stream_name, max_bookmark_value, bookmark_field, parent, parent_id)
+                self.write_bookmark(state, stream_name, max_bookmark_value, bookmark_field, parent, base_parent)
 
             # Increment date window and sum endpoint_total
             start_window = end_window
