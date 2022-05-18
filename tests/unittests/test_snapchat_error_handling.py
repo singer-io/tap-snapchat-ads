@@ -36,7 +36,7 @@ class TestExceptionHandling(unittest.TestCase):
             Test case to verify 400 error message from response
         """
         mocked_request.return_value = MockedResponse(400)
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatBadRequestError) as e:
             clx.request('GET')
             
@@ -48,7 +48,7 @@ class TestExceptionHandling(unittest.TestCase):
         """
 
         mocked_request.return_value = MockedResponse(400, "This mesaage from response 400.")
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatBadRequestError) as e:
             clx.request('GET')
             
@@ -60,7 +60,7 @@ class TestExceptionHandling(unittest.TestCase):
         """
 
         mocked_request.return_value = MockedResponse(401)
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatUnauthorizedError) as e:
             clx.request('GET')
 
@@ -72,7 +72,7 @@ class TestExceptionHandling(unittest.TestCase):
         """
 
         mocked_request.return_value = MockedResponse(401, "This mesaage from response 401.")
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatUnauthorizedError) as e:
             clx.request('GET')
             
@@ -84,7 +84,7 @@ class TestExceptionHandling(unittest.TestCase):
         """
 
         mocked_request.return_value = MockedResponse(403)
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatForbiddenError) as e:
             clx.request('GET')
 
@@ -96,7 +96,7 @@ class TestExceptionHandling(unittest.TestCase):
         """
 
         mocked_request.return_value = MockedResponse(403, "This mesaage from response 403.")
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatForbiddenError) as e:
             clx.request('GET')
 
@@ -107,7 +107,7 @@ class TestExceptionHandling(unittest.TestCase):
             Test case to verify 404 error message from response
         """
         mocked_request.return_value = MockedResponse(404)
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatNotFoundError) as e:
             clx.request('GET')
             
@@ -119,7 +119,7 @@ class TestExceptionHandling(unittest.TestCase):
         """
 
         mocked_request.return_value = MockedResponse(404, 'This mesaage from response 404')
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatNotFoundError) as e:
             clx.request('GET')
         
@@ -130,7 +130,7 @@ class TestExceptionHandling(unittest.TestCase):
             Test case to verify 405 error message from response
         """
         mocked_request.return_value = MockedResponse(405)
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatMethodNotAllowedError) as e:
             clx.request('GET')
 
@@ -142,7 +142,7 @@ class TestExceptionHandling(unittest.TestCase):
         """
 
         mocked_request.return_value = MockedResponse(405, "This mesaage from response 405")
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatMethodNotAllowedError) as e:
             clx.request('GET')
 
@@ -153,7 +153,7 @@ class TestExceptionHandling(unittest.TestCase):
             Test case to verify 406 error message from response
         """
         mocked_request.return_value = MockedResponse(406)
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatNotAcceptableError) as e:
             clx.request('GET')
 
@@ -165,7 +165,7 @@ class TestExceptionHandling(unittest.TestCase):
         """
 
         mocked_request.return_value = MockedResponse(406, "This mesaage from response 406")
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatNotAcceptableError) as e:
             clx.request('GET')
 
@@ -176,7 +176,7 @@ class TestExceptionHandling(unittest.TestCase):
             Test case to verify 410 error message from response
         """
         mocked_request.return_value = MockedResponse(410)
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatGoneError) as e:
             clx.request('GET')
 
@@ -188,7 +188,7 @@ class TestExceptionHandling(unittest.TestCase):
         """
 
         mocked_request.return_value = MockedResponse(410, "This mesaage from response 410")
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatGoneError) as e:
             clx.request('GET')
 
@@ -199,7 +199,7 @@ class TestExceptionHandling(unittest.TestCase):
             Test case to verify 418 error message from response
         """
         mocked_request.return_value = MockedResponse(418)
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatTeapotError) as e:
             clx.request('GET')
 
@@ -211,7 +211,7 @@ class TestExceptionHandling(unittest.TestCase):
         """
 
         mocked_request.return_value = MockedResponse(418, "This mesaage from response 418")
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.SnapchatTeapotError) as e:
             clx.request('GET')
 
@@ -225,7 +225,7 @@ class TestExceptionHandling(unittest.TestCase):
             Test case to verify 500 error message from response
         """
         mocked_request.return_value = MockedResponse(500)
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.Server5xxError) as e:
             clx.request('GET')
 
@@ -238,7 +238,7 @@ class TestExceptionHandling(unittest.TestCase):
         """
 
         mocked_request.return_value = MockedResponse(500, "This mesaage from response 500")
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.Server5xxError) as e:
             clx.request('GET')
 
@@ -251,7 +251,7 @@ class TestExceptionHandling(unittest.TestCase):
             Test case to verify 503 error message from response
         """
         mocked_request.return_value = MockedResponse(503)
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.Server5xxError) as e:
             clx.request('GET')
 
@@ -264,7 +264,7 @@ class TestExceptionHandling(unittest.TestCase):
         """
 
         mocked_request.return_value = MockedResponse(503, "This mesaage from response 503")
-        clx = SnapchatClient("test", "test", "test", "test")
+        clx = SnapchatClient("test", "test", "test", 300)
         with self.assertRaises(client.Server5xxError) as e:
             clx.request('GET')
 
