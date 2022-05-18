@@ -22,6 +22,7 @@ jobs:
           command: |
             source /usr/local/share/virtualenvs/tap-tester/bin/activate
             stitch-validate-json tap_snapchat_ads/schemas/*.json
+      - add_ssh_keys
       - run:
           name: 'Unit Tests'
           command: |
