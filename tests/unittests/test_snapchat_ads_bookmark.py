@@ -65,7 +65,7 @@ class TestBookmark(unittest.TestCase):
         state = {}
 
         sync(self.client, self.config, MockCatalog(['organizations']), state)
-        expected_bookmark = '{"bookmarks": {"organizations": {"updated_at": "2022-04-16T05:44:39.787000Z"}}}'
+        expected_bookmark = '{"bookmarks": {"organizations": {"updated_at": "2022-04-16T05:44:39.787000Z"}}, "currently_syncing": null}'
         state = json.dumps(state)
         
         # Check whether bookmark is written as expected
@@ -78,7 +78,7 @@ class TestBookmark(unittest.TestCase):
 
         sync(self.client, self.config, MockCatalog(['organizations', 'ad_accounts']), state)
 
-        expected_bookmark = '{"bookmarks": {"ad_accounts": {"updated_at(parent_organization_id:organization_id)": "2022-04-16T05:44:39.787000Z"}, "organizations": {"updated_at": "2022-04-16T05:44:39.787000Z"}}}'
+        expected_bookmark = '{"bookmarks": {"ad_accounts": {"updated_at(parent_organization_id:organization_id)": "2022-04-16T05:44:39.787000Z"}, "organizations": {"updated_at": "2022-04-16T05:44:39.787000Z"}}, "currently_syncing": null}'
         state = json.dumps(state)
 
         # Check whether bookmark is written as expected
@@ -90,7 +90,7 @@ class TestBookmark(unittest.TestCase):
 
         sync(self.client, self.config, MockCatalog(['organizations', 'ad_accounts', 'pixels']), state)
 
-        expected_bookmark = '{"bookmarks": {"pixels": {"updated_at(parent_ad_account_id:adaccount_id)": "2022-04-16T05:44:39.787000Z"}, "ad_accounts": {"updated_at(parent_organization_id:organization_id)": "2022-04-16T05:44:39.787000Z"}, "organizations": {"updated_at": "2022-04-16T05:44:39.787000Z"}}}'
+        expected_bookmark = '{"bookmarks": {"pixels": {"updated_at(parent_ad_account_id:adaccount_id)": "2022-04-16T05:44:39.787000Z"}, "ad_accounts": {"updated_at(parent_organization_id:organization_id)": "2022-04-16T05:44:39.787000Z"}, "organizations": {"updated_at": "2022-04-16T05:44:39.787000Z"}}, "currently_syncing": null}'
         state = json.dumps(state)
 
         # Check whether bookmark is written as expected
