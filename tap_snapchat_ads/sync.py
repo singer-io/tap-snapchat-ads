@@ -65,3 +65,7 @@ def sync(client, config, catalog, state):
             LOGGER.info('FINISHED Syncing: {}, total_records: {}'.format(
                 stream_name,
                 total_records))
+
+    # remove currently_syncing at the end of the sync this will help in
+    # edge case scenario by handling infinite loop of empty state file
+    update_currently_syncing(state, None)
