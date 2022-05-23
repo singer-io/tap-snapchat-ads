@@ -1,18 +1,7 @@
 import singer
-from tap_snapchat_ads.streams import STREAMS, ROOT_STREAMS
+from tap_snapchat_ads.streams import STREAMS, ROOT_STREAMS, update_currently_syncing
 
 LOGGER = singer.get_logger()
-
-# Currently syncing sets the stream currently being delivered in the state.
-# If the integration is interrupted, this state property is used to identify
-#  the starting point to continue from.
-# Reference: https://github.com/singer-io/singer-python/blob/master/singer/bookmarks.py#L41-L46
-def update_currently_syncing(state, stream_name):
-    if (stream_name is None) and ('currently_syncing' in state):
-        del state['currently_syncing']
-    else:
-        singer.set_currently_syncing(state, stream_name)
-    singer.write_state(state)
 
 # Function for sync mode
 def sync(client, config, catalog, state):
@@ -30,7 +19,11 @@ def sync(client, config, catalog, state):
     # Get the streams to sync (based on dependencies)
     sync_streams = []
     # Loop thru all streams
-    for stream_name, stream_class  in STREAMS.items():
+    for stream_name, stream_class in STREAMS.items():
+        # only sync streams from last stream ie. 'currently_syncing' stream
+        if last_stream and last_stream != stream_name:
+            continue
+        last_stream = None
         # If stream has a parent_stream, then it is a child stream
         parent_stream = stream_class.parent_stream
         grandparent_stream = stream_class.grandparent_stream
@@ -72,3 +65,7 @@ def sync(client, config, catalog, state):
             LOGGER.info('FINISHED Syncing: {}, total_records: {}'.format(
                 stream_name,
                 total_records))
+
+    # remove currently_syncing at the end of the sync this will help in
+    # edge case scenario by handling infinite loop of empty state file
+    update_currently_syncing(state, None)

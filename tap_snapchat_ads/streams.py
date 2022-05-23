@@ -30,6 +30,17 @@ ALL_STATS_FIELDS = 'android_installs,attachment_avg_view_time_millis,attachment_
 LOGGER = singer.get_logger()
 BASE_URL = 'https://adsapi.snapchat.com/v1'
 
+# Currently syncing sets the stream currently being delivered in the state.
+# If the integration is interrupted, this state property is used to identify
+#  the starting point to continue from.
+# Reference: https://github.com/singer-io/singer-python/blob/master/singer/bookmarks.py#L41-L46
+def update_currently_syncing(state, stream_name):
+    if (stream_name is None) and ('currently_syncing' in state):
+        del state['currently_syncing']
+    else:
+        singer.set_currently_syncing(state, stream_name)
+    singer.write_state(state)
+
 class SnapchatAds:
     tap_stream_id = None
     key_properties = []
@@ -527,6 +538,8 @@ class SnapchatAds:
                                     if stream_name == 'ad_accounts':
                                         timezone_desc = record.get('timezone', timezone_desc)
 
+                                    # set currently syncing as child stream
+                                    update_currently_syncing(state, child_stream_name)
                                     # sync_endpoint for child
                                     LOGGER.info(
                                         'START Sync for Stream: {}, parent_stream: {}, parent_id: {}'\
