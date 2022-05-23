@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.0
+  * Dict based to class based refactoring [#13](https://github.com/singer-io/tap-snapchat-ads/pull/13)
+  * Add retry mechanism and error logging [#14](https://github.com/singer-io/tap-snapchat-ads/pull/14)
+  * Fix bookmark strategy [#16](https://github.com/singer-io/tap-snapchat-ads/pull/16)
+  * Fix replication key for the roles stream [#17](https://github.com/singer-io/tap-snapchat-ads/pull/17)
+  * Fix record write for parent of grand child stream [#19](https://github.com/singer-io/tap-snapchat-ads/pull/19)
+  * Add tap-tester tests for better test coverage [#15] (https://github.com/singer-io/tap-snapchat-ads/pull/15)
+  * Implement Request Timeout [#12] (https://github.com/singer-io/tap-snapchat-ads/pull/12)
+
 ## 0.0.3
   * Always send the timezone as UTC [#5](https://github.com/singer-io/tap-snapchat-ads/pull/5)
 
