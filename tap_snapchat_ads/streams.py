@@ -26,7 +26,7 @@ from singer import Transformer, metadata, metrics, utils
 from singer.utils import strptime_to_utc, strftime
 
 ALL_STATS_FIELDS = 'android_installs,attachment_avg_view_time_millis,attachment_impressions,attachment_quartile_1,attachment_quartile_2,attachment_quartile_3,attachment_total_view_time_millis,attachment_view_completion,avg_screen_time_millis,avg_view_time_millis,impressions,ios_installs,quartile_1,quartile_2,quartile_3,screen_time_millis,spend,swipe_up_percent,swipes,total_installs,video_views,video_views_time_based,video_views_15s,view_completion,view_time_millis,conversion_purchases,conversion_purchases_value,conversion_save,conversion_start_checkout,conversion_add_cart,conversion_view_content,conversion_add_billing,conversion_sign_ups,conversion_searches,conversion_level_completes,conversion_app_opens,conversion_page_views,conversion_subscribe,conversion_ad_click,conversion_ad_view,conversion_complete_tutorial,conversion_invite,conversion_login,conversion_share,conversion_reserve,conversion_achievement_unlocked,conversion_add_to_wishlist,conversion_spend_credits,conversion_rate,conversion_start_trial,conversion_list_view,custom_event_1,custom_event_2,custom_event_3,custom_event_4,custom_event_5,attachment_frequency,attachment_uniques,frequency,uniques'
-
+ALL_STATS_FIELDS_HOURLY_STREAMS = 'android_installs,attachment_avg_view_time_millis,attachment_impressions,attachment_quartile_1,attachment_quartile_2,attachment_quartile_3,attachment_total_view_time_millis,attachment_view_completion,avg_screen_time_millis,avg_view_time_millis,impressions,ios_installs,quartile_1,quartile_2,quartile_3,screen_time_millis,spend,swipe_up_percent,swipes,total_installs,video_views,video_views_time_based,video_views_15s,view_completion,view_time_millis,conversion_purchases,conversion_purchases_value,conversion_save,conversion_start_checkout,conversion_add_cart,conversion_view_content,conversion_add_billing,conversion_sign_ups,conversion_searches,conversion_level_completes,conversion_app_opens,conversion_page_views,conversion_subscribe,conversion_ad_click,conversion_ad_view,conversion_complete_tutorial,conversion_invite,conversion_login,conversion_share,conversion_reserve,conversion_achievement_unlocked,conversion_add_to_wishlist,conversion_spend_credits,conversion_rate,conversion_start_trial,conversion_list_view,custom_event_1,custom_event_2,custom_event_3,custom_event_4,custom_event_5'
 LOGGER = singer.get_logger()
 BASE_URL = 'https://adsapi.snapchat.com/v1'
 
@@ -40,6 +40,17 @@ def update_currently_syncing(state, stream_name):
     else:
         singer.set_currently_syncing(state, stream_name)
     singer.write_state(state)
+
+def get_hourly_stats_fields():
+    """
+    removes fields [attachment_frequency,attachment_uniques,frequency,uniques] for AdSquadStatsHourly, AdStatsHourly,
+     CampaignStatsHourly  from ALL_STATS_FIELDS
+    """
+    unwanted_fields = ['attachment_frequency','attachment_uniques','frequency','uniques']
+    all_fields = ALL_STATS_FIELDS
+    for field in unwanted_fields:
+        all_fields.replace(','+ field, '')
+    return all_fields
 
 class SnapchatAds:
     tap_stream_id = None
@@ -215,6 +226,43 @@ class SnapchatAds:
             hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.timezone('UTC')).strftime('%Y-%m-%dT%H:%M:%SZ')
         return new_dttm
 
+    @staticmethod
+    def extract_selected_profile_data(config, client, stream_name, parent_id=None):
+        """
+        param config: config.json content
+        param client: API client to make requests
+        param stream_name: stream name
+        param parent_id: parent_id for child stream
+
+        Extracts data for selected profiles(organizations and ad_accounts)
+        reads respective IDs from config json and iterates over each id and extracts data
+        """
+        url = BASE_URL + '/{stream_name}/{id}'
+        if stream_name == 'organizations':
+            id_list = config.get('organization_ids')
+        elif stream_name == 'adaccounts':
+            id_list = config.get('ad_account_ids', [])
+        else:
+            return {}
+        response_data = {stream_name: []}
+        for profile_id in id_list:
+            formatted_url = url.format(id=profile_id, stream_name=stream_name)
+            try:
+                data = client.get(url=formatted_url, endpoint=stream_name)
+            except Exception as err:
+                LOGGER.error('{}'.format(err))
+                LOGGER.error('URL for Stream {}: {}'.format(stream_name, formatted_url))
+                raise
+            if stream_name == 'adaccounts':
+                LOGGER.info(data[stream_name][0])
+                # condition checks if retrieved ad_account data is related to current parent_id
+                if data[stream_name][0]['adaccount']['organization_id'] == parent_id:
+                    response_data[stream_name].append(data[stream_name][0])
+            else:
+                response_data[stream_name].append(data[stream_name][0])
+
+        return response_data
+
     # Sync a specific parent or child endpoint.
     def sync_endpoint(
             self,
@@ -384,9 +432,12 @@ class SnapchatAds:
                     # API request data
                     data = {}
                     try:
-                        data = client.get(
-                            url=next_url,
-                            endpoint=stream_name)
+                        # checks if profiles are selected, if not extracts data for all orgs and ad_accounts
+                        if config.get('organization_ids', []) and stream_name in ['organizations', 'ad_accounts']:
+                            data = self.extract_selected_profile_data(config, client, data_key_array, parent_id)
+                            data['request_status'] = 'SUCCESS'
+                        else:
+                            data = client.get(url=next_url, endpoint=stream_name)
                     except Exception as err:
                         LOGGER.error('{}'.format(err))
                         LOGGER.error('URL for Stream {}: {}'.format(stream_name, next_url))
@@ -887,7 +938,7 @@ class CampaignStatsHourly(SnapchatAds):
     paging = False
     parent = 'campaign'
     params = {
-        'fields': ALL_STATS_FIELDS,
+        'fields': get_hourly_stats_fields(),
         'granularity': 'HOUR',
         'omit_empty': 'false',
         'conversion_source_types': 'web,app,total',
@@ -957,7 +1008,7 @@ class AdSquadStatsHourly(SnapchatAds):
     paging = False
     parent = 'ad_squad'
     params = {
-        'fields': ALL_STATS_FIELDS,
+        'fields': get_hourly_stats_fields(),
         'granularity': 'HOUR',
         'omit_empty': 'false',
         'conversion_source_types': 'web,app,total',
@@ -1027,7 +1078,7 @@ class AdStatsHourly(SnapchatAds):
     paging = False
     parent = 'ad'
     params = {
-        'fields': ALL_STATS_FIELDS,
+        'fields': get_hourly_stats_fields(),
         'granularity': 'HOUR',
         'omit_empty': 'false',
         'conversion_source_types': 'web,app,total',
