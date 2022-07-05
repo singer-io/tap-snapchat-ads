@@ -237,15 +237,19 @@ class SnapchatAds:
         Extracts data for selected profiles(organizations and ad_accounts)
         reads respective IDs from config json and iterates over each id and extracts data
         """
+        selected_profiles = config.get('org_account_ids', [])
+
+        ids = []
         url = BASE_URL + '/{stream_name}/{id}'
-        if stream_name == 'organizations':
-            id_list = config.get('organization_ids')
-        elif stream_name == 'adaccounts':
-            id_list = config.get('ad_account_ids', [])
-        else:
-            return {}
+        for profile in selected_profiles:
+            if stream_name == 'organizations':
+                ids.append(profile.get('organization_id'))
+            else:
+                if parent_id == profile.get('organization_id'):
+                    ids = profile.get('ad_account_ids')
+                    break
         response_data = {stream_name: []}
-        for profile_id in id_list:
+        for profile_id in ids:
             formatted_url = url.format(id=profile_id, stream_name=stream_name)
             try:
                 data = client.get(url=formatted_url, endpoint=stream_name)
@@ -253,13 +257,7 @@ class SnapchatAds:
                 LOGGER.error('{}'.format(err))
                 LOGGER.error('URL for Stream {}: {}'.format(stream_name, formatted_url))
                 raise
-            if stream_name == 'adaccounts':
-                LOGGER.info(data[stream_name][0])
-                # condition checks if retrieved ad_account data is related to current parent_id
-                if data[stream_name][0]['adaccount']['organization_id'] == parent_id:
-                    response_data[stream_name].append(data[stream_name][0])
-            else:
-                response_data[stream_name].append(data[stream_name][0])
+            response_data[stream_name].append(data[stream_name][0])
 
         return response_data
 
@@ -433,7 +431,7 @@ class SnapchatAds:
                     data = {}
                     try:
                         # checks if profiles are selected, if not extracts data for all orgs and ad_accounts
-                        if config.get('organization_ids', []) and stream_name in ['organizations', 'ad_accounts']:
+                        if config.get('org_account_ids', []) and stream_name in ['organizations', 'ad_accounts']:
                             data = self.extract_selected_profile_data(config, client, data_key_array, parent_id)
                             data['request_status'] = 'SUCCESS'
                         else:

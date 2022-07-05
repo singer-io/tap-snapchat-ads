@@ -41,7 +41,9 @@ class SnapchatBase(unittest.TestCase):
         required_env = {
             "TAP_SNAPCHAT_ADS_CLIENT_ID",
             "TAP_SNAPCHAT_ADS_CLIENT_SECRET",
-            "TAP_SNAPCHAT_ADS_REFRESH_TOKEN"
+            "TAP_SNAPCHAT_ADS_REFRESH_TOKEN",
+            "TAP_SNAPCHAT_ADS_ORGANIZATION_ID",
+            "TAP_SNAPCHAT_ADS_AD_ACCOUNT_IDS"
         }
         missing_envs = [v for v in required_env if not os.getenv(v)]
         if missing_envs:
@@ -54,7 +56,9 @@ class SnapchatBase(unittest.TestCase):
             "view_attribution_window": "7_DAY",
             "omit_empty": "true",
             "targeting_country_codes": "us, ca",
-            "start_date": "2020-01-01T00:00:00Z"
+            "start_date": "2020-01-01T00:00:00Z",
+            "org_account_ids": [{"organization_id": os.getenv("TAP_SNAPCHAT_ADS_ORGANIZATION_ID"), "ad_account_ids":
+                                 os.getenv("TAP_SNAPCHAT_ADS_AD_ACCOUNT_IDS", "").split(",")}]
         }
 
         if original:

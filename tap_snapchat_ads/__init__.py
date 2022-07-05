@@ -16,7 +16,8 @@ REQUIRED_CONFIG_KEYS = [
     'client_secret',
     'refresh_token',
     'start_date',
-    'user_agent'
+    'user_agent',
+    'org_account_ids'
 ]
 
 def do_discover():
