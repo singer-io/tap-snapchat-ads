@@ -243,10 +243,10 @@ class SnapchatAds:
         url = BASE_URL + '/{stream_name}/{id}'
         for profile in selected_profiles:
             if stream_name == 'organizations':
-                ids.append(profile.get('organization_id'))
+                ids.append(profile.get('organisation_id'))
             else:
-                if parent_id == profile.get('organization_id'):
-                    ids = profile.get('ad_account_ids')
+                if parent_id == profile.get('organisation_id'):
+                    ids = profile.get('ad_accounts')
                     break
         response_data = {stream_name: []}
         for profile_id in ids:

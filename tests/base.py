@@ -57,7 +57,7 @@ class SnapchatBase(unittest.TestCase):
             "omit_empty": "true",
             "targeting_country_codes": "us, ca",
             "start_date": "2020-01-01T00:00:00Z",
-            "org_account_ids": [{"organization_id": os.getenv("TAP_SNAPCHAT_ADS_ORGANIZATION_ID"), "ad_account_ids":
+            "org_account_ids": [{"organisation_id": os.getenv("TAP_SNAPCHAT_ADS_ORGANIZATION_ID"), "ad_accounts":
                                  os.getenv("TAP_SNAPCHAT_ADS_AD_ACCOUNT_IDS", "").split(",")}]
         }
 
