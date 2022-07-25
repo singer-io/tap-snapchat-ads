@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
 from singer.schema import Schema
-from tap_snapchat_ads.streams import SnapchatAds
+from tap_snapchat_ads.streams import SnapchatAds, ALL_STATS_FIELDS, get_hourly_stats_fields
 
 
 class MockStream():
@@ -62,3 +62,21 @@ class TestExtractOrgAdAccountData(unittest.TestCase):
         stream_name = 'ad_accounts'
         self.assertEqual({'ad_accounts': []}, self.stream_obj.extract_selected_profile_data(config, client,
                                                                                             stream_name, 'abc'))
+
+
+class TestGetHourlyStats(unittest.TestCase):
+    """
+    Unittest to verify get_hourly_stats_fields fn
+    """
+
+    def test_get_hourly_stats(self):
+        """
+        test suite is to make sure each field of unwanted_fields list object is not included in
+        get_hourly_stats_fields resp
+        """
+        unwanted_fields = ['attachment_frequency', 'attachment_uniques', 'frequency', 'uniques']
+        get_hourly_stats_fields_resp = get_hourly_stats_fields()
+        for field in unwanted_fields:
+            self.assertNotIn(field, get_hourly_stats_fields_resp)
+
+

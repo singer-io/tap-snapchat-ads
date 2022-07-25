@@ -49,7 +49,7 @@ def get_hourly_stats_fields():
     unwanted_fields = ['attachment_frequency','attachment_uniques','frequency','uniques']
     all_fields = ALL_STATS_FIELDS
     for field in unwanted_fields:
-        all_fields.replace(','+ field, '')
+        all_fields = all_fields.replace(','+ field, '')
     return all_fields
 
 class SnapchatAds:
