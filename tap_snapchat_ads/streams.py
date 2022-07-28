@@ -248,6 +248,9 @@ class SnapchatAds:
                 if parent_id == profile.get('organisation_id'):
                     ids = profile.get('ad_accounts')
                     break
+        # WARN Logger to confirm if User has selected Ad accounts or if Ad accounts doesn't exist for org_id
+        if not ids and stream_name == 'adaccounts':
+            LOGGER.warn("No AD Accounts selected or exist for organisation id {}".format(parent_id))
         response_data = {stream_name: []}
         for profile_id in ids:
             formatted_url = url.format(id=profile_id, stream_name=stream_name)
