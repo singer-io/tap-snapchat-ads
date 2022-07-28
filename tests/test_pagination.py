@@ -25,11 +25,12 @@ class SnapchatPaginationTest(SnapchatBase):
         stream_to_skip = {"phone_numbers", "pixels"}
 
         # for this streams, page size is not supported for API calls
-        pagination_not_supported_streams = {"funding_sources", "members"} | self.stats_streams
+        # for organizations and ad_accounts, pagination is not being used in tap implementation, as they are part of profile selection
+        pagination_not_supported_streams = {"funding_sources", "members",  "organizations", "ad_accounts"} | self.stats_streams
 
         streams_with_50_page_size = {"targeting_advanced_demographics", "targeting_interests_dlxc", "targeting_countries", "targeting_regions", "targeting_ios_versions", "targeting_carriers", "targeting_metros", "targeting_interests_scls", "targeting_interests_dlxs", "targeting_interests_dlxp", "targeting_interests_plc", "targeting_location_categories"}
         streams_with_1000_page_size = {"targeting_device_makes", "targeting_postal_codes", "targeting_interests_nln"}
-        streams_with_1_page_size = {"product_sets", "organizations", "targeting_connection_types", "creatives", "ad_squads", "targeting_os_types", "media", "ads", "product_catalogs", "billing_centers", "targeting_genders", "audience_segments", "targeting_languages", "targeting_age_groups", "roles", "ad_accounts", "campaigns"}
+        streams_with_1_page_size = {"product_sets", "targeting_connection_types", "creatives", "ad_squads", "targeting_os_types", "media", "ads", "product_catalogs", "billing_centers", "targeting_genders", "audience_segments", "targeting_languages", "targeting_age_groups", "roles", "campaigns"}
 
         # verify all the stream are either skipped or tested
         self.assertEqual(
