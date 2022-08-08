@@ -41,6 +41,17 @@ def update_currently_syncing(state, stream_name):
         singer.set_currently_syncing(state, stream_name)
     singer.write_state(state)
 
+def get_hourly_stats_fields():
+    """
+    removes fields [attachment_frequency,attachment_uniques,frequency,uniques] for AdSquadStatsHourly, AdStatsHourly,
+     CampaignStatsHourly  from ALL_STATS_FIELDS
+    """
+    unwanted_fields = ['attachment_frequency','attachment_uniques','frequency','uniques']
+    all_fields = ALL_STATS_FIELDS
+    for field in unwanted_fields:
+        all_fields = all_fields.replace(','+ field, '')
+    return all_fields
+
 class SnapchatAds:
     tap_stream_id = None
     key_properties = []
@@ -215,6 +226,44 @@ class SnapchatAds:
             hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.timezone('UTC')).strftime('%Y-%m-%dT%H:%M:%SZ')
         return new_dttm
 
+    @staticmethod
+    def extract_selected_profile_data(config, client, stream_name, parent_id=None):
+        """
+        param config: config.json content
+        param client: API client to make requests
+        param stream_name: stream name
+        param parent_id: parent_id for child stream
+
+        Extracts data for selected profiles(organizations and ad_accounts)
+        reads respective IDs from config json and iterates over each id and extracts data
+        """
+        selected_profiles = config.get('org_account_ids', [])
+
+        ids = []
+        url = BASE_URL + '/{stream_name}/{id}'
+        for profile in selected_profiles:
+            if stream_name == 'organizations':
+                ids.append(profile.get('organisation_id'))
+            else:
+                if parent_id == profile.get('organisation_id'):
+                    ids = profile.get('ad_accounts')
+                    break
+        # WARN Logger to confirm if User has selected Ad accounts or if Ad accounts doesn't exist for org_id
+        if not ids and stream_name == 'adaccounts':
+            LOGGER.warn("No AD Accounts selected or exist for organisation id {}".format(parent_id))
+        response_data = {stream_name: []}
+        for profile_id in ids:
+            formatted_url = url.format(id=profile_id, stream_name=stream_name)
+            try:
+                data = client.get(url=formatted_url, endpoint=stream_name)
+            except Exception as err:
+                LOGGER.error('{}'.format(err))
+                LOGGER.error('URL for Stream {}: {}'.format(stream_name, formatted_url))
+                raise
+            response_data[stream_name].append(data[stream_name][0])
+
+        return response_data
+
     # Sync a specific parent or child endpoint.
     def sync_endpoint(
             self,
@@ -384,9 +433,12 @@ class SnapchatAds:
                     # API request data
                     data = {}
                     try:
-                        data = client.get(
-                            url=next_url,
-                            endpoint=stream_name)
+                        # checks if profiles are selected, if not extracts data for all orgs and ad_accounts
+                        if config.get('org_account_ids', []) and stream_name in ['organizations', 'ad_accounts']:
+                            data = self.extract_selected_profile_data(config, client, data_key_array, parent_id)
+                            data['request_status'] = 'SUCCESS'
+                        else:
+                            data = client.get(url=next_url, endpoint=stream_name)
                     except Exception as err:
                         LOGGER.error('{}'.format(err))
                         LOGGER.error('URL for Stream {}: {}'.format(stream_name, next_url))
@@ -887,7 +939,7 @@ class CampaignStatsHourly(SnapchatAds):
     paging = False
     parent = 'campaign'
     params = {
-        'fields': ALL_STATS_FIELDS,
+        'fields': get_hourly_stats_fields(),
         'granularity': 'HOUR',
         'omit_empty': 'false',
         'conversion_source_types': 'web,app,total',
@@ -957,7 +1009,7 @@ class AdSquadStatsHourly(SnapchatAds):
     paging = False
     parent = 'ad_squad'
     params = {
-        'fields': ALL_STATS_FIELDS,
+        'fields': get_hourly_stats_fields(),
         'granularity': 'HOUR',
         'omit_empty': 'false',
         'conversion_source_types': 'web,app,total',
@@ -1027,7 +1079,7 @@ class AdStatsHourly(SnapchatAds):
     paging = False
     parent = 'ad'
     params = {
-        'fields': ALL_STATS_FIELDS,
+        'fields': get_hourly_stats_fields(),
         'granularity': 'HOUR',
         'omit_empty': 'false',
         'conversion_source_types': 'web,app,total',

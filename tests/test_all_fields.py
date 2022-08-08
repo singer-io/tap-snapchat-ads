@@ -5,6 +5,12 @@ class SnapchatAllFieldsTest(SnapchatBase):
 
     fields_to_remove = {
         # fields for which data is not generated
+        'organizations': {
+            'roles',
+            'my_member_id',
+            'my_display_name',
+            'my_invited_email'
+        },
         'ad_accounts': {
             'lifetime_spend_cap_micro'
         },

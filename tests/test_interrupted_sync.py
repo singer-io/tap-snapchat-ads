@@ -63,7 +63,6 @@ class SnapchatInterruptedSyncTest(SnapchatBase):
             "bookmarks": {
                 "campaigns": {
                     "updated_at(parent_ad_account_id:18d80268-379d-45f4-9869-45bb3316a69e)": "2022-04-27T12:14:58.680000Z",
-                    "updated_at(parent_ad_account_id:2b42e6fc-1524-46df-84eb-7bb1b585b200)": "2022-04-29T11:03:07.879000Z",
                     "updated_at(parent_ad_account_id:cc8ba4e0-f36c-4f0e-9e2a-e8414caaaca1)": "2020-01-01T00:00:00Z"
                 },
                 "ad_squads": {

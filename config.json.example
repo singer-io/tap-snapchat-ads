@@ -9,4 +9,5 @@
   "start_date": "2020-01-01T00:00:00Z",
   "user_agent": "tap-snapchat-ads <api_user_email@example.com>",
   "request_timeout": 300,
+  "org_account_ids": [{"organisation_id": "abc", "ad_accounts": ["a", "b", "c"]}]
 }
