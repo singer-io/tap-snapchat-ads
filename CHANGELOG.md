@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.1
+  * Added mechanism to extract data for selected profiles [#22](https://github.com/singer-io/tap-snapchat-ads/pull/22)
+
 ## 0.1.0
   * Dict based to class based refactoring [#13](https://github.com/singer-io/tap-snapchat-ads/pull/13)
   * Add retry mechanism and error logging [#14](https://github.com/singer-io/tap-snapchat-ads/pull/14)
