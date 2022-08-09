@@ -303,13 +303,8 @@ class SnapchatAds:
 
         # tap config variabless
         start_date = config.get('start_date')
-        swipe_up_attribution_window = config.get('swipe_up_attribution_window', '28_DAY')
-        view_attribution_window = config.get('view_attribution_window', '7_DAY')
-        # after editing the configurations on integration page, sync is failing because all optional
-        # parameters are having null values in config.json
-        # so sync fails with `None object has no replace attribute`
-        swipe_up_attribution_window = '28_DAY' if not swipe_up_attribution_window else swipe_up_attribution_window
-        view_attribution_window = '7_DAY' if not view_attribution_window else view_attribution_window
+        swipe_up_attribution_window = config.get('swipe_up_attribution_window') or '28_DAY'
+        view_attribution_window = config.get('view_attribution_window') or '7_DAY'
 
         swipe_up_attr = int(swipe_up_attribution_window.replace('_DAY', ''))
 
@@ -320,12 +315,11 @@ class SnapchatAds:
 
         attribution_window = max(1, swipe_up_attr, view_attr)
 
-        omit_empty = config.get('omit_empty', 'true')
-        omit_empty = 'true' if not omit_empty else omit_empty
+        omit_empty = config.get('omit_empty') or 'true'
         if '_stats_' in stream_name:
             params['omit_empty'] = omit_empty
 
-        country_codes = 'us' if not config.get('targeting_country_codes', 'us') else config.get('targeting_country_codes', 'us')
+        country_codes = config.get('targeting_country_codes') or 'us'
         country_codes = country_codes.replace(' ', '').lower()
         if targeting_country_ind:
             country_code_list = country_codes.split(',')
