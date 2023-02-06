@@ -27,6 +27,9 @@ class SnapchatBase(unittest.TestCase):
 
     stats_streams = {"ad_account_stats_daily", "ad_account_stats_hourly", "pixel_domain_stats", "campaign_stats_daily", "campaign_stats_hourly", "ad_squad_stats_daily", "ad_squad_stats_hourly", "ad_stats_daily",  "ad_stats_hourly"}
 
+    # Currently there is no data available for following targeting streams
+    targeting_streams = {"targeting_interests_dlxp", "targeting_interests_plc"}
+
     @staticmethod
     def tap_name():
         """The name of the tap"""
