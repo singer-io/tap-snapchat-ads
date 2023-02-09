@@ -382,7 +382,7 @@ class SnapchatAds:
                     if window_start_dt_str == window_end_dt_str:
                         # E1008: Unsupported Stats Query: End time should be after start time.
                         # Snapchat ADs throws above error if both start and end_time are equal.
-                        # add delta of one hour and remove minutes from it.
+                        # add delta of one hour to end_window and remove minutes from it.
                         window_end_dt_str = self.remove_minutes_local(end_window + timedelta(
                             hours=1), timezone)
 
