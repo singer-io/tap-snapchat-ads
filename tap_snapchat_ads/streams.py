@@ -21,6 +21,7 @@ import pytz
 import math
 import humps
 from datetime import timedelta
+from urllib.parse import urlencode
 import singer
 from singer import Transformer, metadata, metrics, utils
 from singer.utils import strptime_to_utc, strftime
@@ -175,6 +176,11 @@ class SnapchatAds:
 
         with metrics.record_counter(stream_name) as counter:
             for record in records:
+                # Read and store the ad_account's timezone incase the user not selected the timezone
+                # field, this field value is required to transform the start and end window date
+                # from ad_account's timezone to UTC timezone.
+                if stream_name == "ad_accounts":
+                    ad_account_time_zone = record.get("timezone", None)
                 # Transform record for Singer.io
                 with Transformer() as transformer:
                     transformed_record = transformer.transform(
@@ -204,6 +210,11 @@ class SnapchatAds:
                     else:
                         self.write_record(stream_name, transformed_record, time_extracted=time_extracted)
                         counter.increment()
+
+                    if stream_name == "ad_accounts" and "timezone" not in record:
+                        # Write the timezone value to original record if it's not selected by the user
+                        record["timezone"] = ad_account_time_zone
+
 
             LOGGER.info('Stream: {}, Processed {} records'.format(stream_name, counter.value))
             return max_bookmark_value, counter.value
@@ -421,9 +432,8 @@ class SnapchatAds:
                         swipe_up_attribution_window=swipe_up_attribution_window,
                         view_attribution_window=view_attribution_window)
                     params[key] = new_val
-                # concate params
-                querystring = '&'.join(['%s=%s' % (key, value) for (key, value) in params.items()])
-
+                # Create QueryString from params dict using urlencode
+                querystring = urlencode(params)
                 # initialize next_url
                 next_url = '{}/{}?{}'.format(
                     client.base_url,
@@ -509,7 +519,6 @@ class SnapchatAds:
                                 raise RuntimeError(data_record)
 
                             record = data_record.get(data_key_record, {})
-
                             # Transforms to align schemas for targeting streams
                             if stream_name.startswith('targeting_'):
                                 record['targeting_group'] = targeting_group
@@ -570,7 +579,6 @@ class SnapchatAds:
                             last_datetime=last_datetime)
                         LOGGER.info('Stream {}, batch processed {} records'.format(
                             stream_name, record_count))
-
                     # Loop thru parent batch records for each children objects (if should stream)
                     children = stream_class.children
                     if children:
