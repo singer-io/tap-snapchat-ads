@@ -53,7 +53,7 @@ class SnapchatPaginationTest(SnapchatBase):
         - Verify by pks that the data replicated matches the data we expect.
         """
 
-        expected_streams = streams - self.failing_targeting_streams
+        expected_streams = streams - self.missing_targeting_streams
         conn_id = connections.ensure_connection(self)
 
         # Select all streams and all fields within streams
