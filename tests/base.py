@@ -26,7 +26,10 @@ class SnapchatBase(unittest.TestCase):
     OBEYS_START_DATE = "obey-start-date"
 
     # TDL-21946 Work-Item to generate test data for following list of streams
-    stats_streams = {"ad_account_stats_daily", "ad_account_stats_hourly", "pixel_domain_stats", "campaign_stats_daily", "campaign_stats_hourly", "ad_squad_stats_daily", "ad_squad_stats_hourly", "ad_stats_daily",  "ad_stats_hourly"}
+    stats_streams = {"ad_account_stats_daily", "ad_account_stats_hourly", "pixel_domain_stats",
+                     "campaign_stats_daily", "campaign_stats_hourly", "ad_squad_stats_daily",
+                     "ad_squad_stats_hourly", "ad_stats_daily",  "ad_stats_hourly",
+                     "targeting_interests_dlxp", "targeting_interests_plc"}
     # Currently there is no data available for following targeting streams
     missing_targeting_streams = {"targeting_interests_dlxp", "targeting_interests_plc"}
 
