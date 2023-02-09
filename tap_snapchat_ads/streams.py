@@ -176,15 +176,10 @@ class SnapchatAds:
 
         with metrics.record_counter(stream_name) as counter:
             for record in records:
-                # Read and store the ad_account's timezone incase the user not selected the timezone
-                # field, this field value is required to transform the start and end window date
-                # from ad_account's timezone to UTC timezone.
-                if stream_name == "ad_accounts":
-                    ad_account_time_zone = record.get("timezone", None)
                 # Transform record for Singer.io
                 with Transformer() as transformer:
                     transformed_record = transformer.transform(
-                        record,
+                        dict(record),
                         schema,
                         stream_metadata)
 
@@ -210,11 +205,6 @@ class SnapchatAds:
                     else:
                         self.write_record(stream_name, transformed_record, time_extracted=time_extracted)
                         counter.increment()
-
-                    if stream_name == "ad_accounts" and "timezone" not in record:
-                        # Write the timezone value to original record if it's not selected by the user
-                        record["timezone"] = ad_account_time_zone
-
 
             LOGGER.info('Stream: {}, Processed {} records'.format(stream_name, counter.value))
             return max_bookmark_value, counter.value
