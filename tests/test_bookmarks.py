@@ -52,7 +52,7 @@ class SnapchatBookmarksTest(SnapchatBase):
         conn_id = connections.ensure_connection(self, original_properties=False)
         runner.run_check_mode(self, conn_id)
 
-        expected_streams = self.expected_streams() - self.stats_streams
+        expected_streams = self.expected_streams() - self.stats_streams - self.missing_targeting_streams
 
         found_catalogs = self.run_and_verify_check_mode(conn_id)
         self.select_found_catalogs(conn_id, found_catalogs, only_streams=expected_streams)

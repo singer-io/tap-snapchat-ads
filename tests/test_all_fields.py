@@ -57,7 +57,8 @@ class SnapchatAllFieldsTest(SnapchatBase):
         },
         # cannot publish pixels, thus not able to get 'effective_status' of the pixel
         'pixels': {
-            'effective_status'
+            'effective_status',
+            'visible_to'
         },
         # These fields are not being replicated from the API, and it is confirmed by the support
         'roles': {
@@ -184,7 +185,7 @@ class SnapchatAllFieldsTest(SnapchatBase):
         - Verify no unexpected streams were replicated
         - Verify that more than just the automatic fields are replicated for each stream
         """
-        expected_streams = self.expected_streams() - self.stats_streams
+        expected_streams = self.expected_streams() - self.stats_streams - self.missing_targeting_streams
 
         # instantiate connection
         conn_id = connections.ensure_connection(self)
