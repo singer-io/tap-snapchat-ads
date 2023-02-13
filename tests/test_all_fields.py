@@ -185,7 +185,7 @@ class SnapchatAllFieldsTest(SnapchatBase):
         - Verify no unexpected streams were replicated
         - Verify that more than just the automatic fields are replicated for each stream
         """
-        expected_streams = self.expected_streams() - self.stats_streams - self.targeting_streams
+        expected_streams = self.expected_streams() - self.stats_streams - self.missing_targeting_streams
 
         # instantiate connection
         conn_id = connections.ensure_connection(self)
