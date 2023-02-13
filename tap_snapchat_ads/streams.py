@@ -21,6 +21,7 @@ import pytz
 import math
 import humps
 from datetime import timedelta
+from urllib.parse import urlencode
 import singer
 from singer import Transformer, metadata, metrics, utils
 from singer.utils import strptime_to_utc, strftime
@@ -178,7 +179,7 @@ class SnapchatAds:
                 # Transform record for Singer.io
                 with Transformer() as transformer:
                     transformed_record = transformer.transform(
-                        record,
+                        dict(record),
                         schema,
                         stream_metadata)
 
@@ -303,8 +304,8 @@ class SnapchatAds:
 
         # tap config variabless
         start_date = config.get('start_date')
-        swipe_up_attribution_window = config.get('swipe_up_attribution_window', '28_DAY')
-        view_attribution_window = config.get('view_attribution_window', '7_DAY')
+        swipe_up_attribution_window = config.get('swipe_up_attribution_window') or '28_DAY'
+        view_attribution_window = config.get('view_attribution_window') or '7_DAY'
 
         swipe_up_attr = int(swipe_up_attribution_window.replace('_DAY', ''))
 
@@ -315,11 +316,12 @@ class SnapchatAds:
 
         attribution_window = max(1, swipe_up_attr, view_attr)
 
-        omit_empty = config.get('omit_empty', 'true')
+        omit_empty = config.get('omit_empty') or 'true'
         if '_stats_' in stream_name:
             params['omit_empty'] = omit_empty
 
-        country_codes = config.get('targeting_country_codes', 'us').replace(' ', '').lower()
+        country_codes = config.get('targeting_country_codes') or 'us'
+        country_codes = country_codes.replace(' ', '').lower()
         if targeting_country_ind:
             country_code_list = country_codes.split(',')
         else:
@@ -380,7 +382,10 @@ class SnapchatAds:
                     window_start_dt_str = self.remove_minutes_local(start_window, timezone)
                     window_end_dt_str = self.remove_minutes_local(end_window, timezone)
                     if window_start_dt_str == window_end_dt_str:
-                        window_end_dt_str = self.remove_hours_local(end_window + timedelta(
+                        # E1008: Unsupported Stats Query: End time should be after start time.
+                        # Snapchat ADs throws above error if both start and end_time are equal.
+                        # add delta of one hour to end_window and remove minutes from it.
+                        window_end_dt_str = self.remove_minutes_local(end_window + timedelta(
                             hours=1), timezone)
 
                 params[bookmark_query_field_from] = window_start_dt_str
@@ -418,9 +423,8 @@ class SnapchatAds:
                         swipe_up_attribution_window=swipe_up_attribution_window,
                         view_attribution_window=view_attribution_window)
                     params[key] = new_val
-                # concate params
-                querystring = '&'.join(['%s=%s' % (key, value) for (key, value) in params.items()])
-
+                # Create QueryString from params dict using urlencode
+                querystring = urlencode(params)
                 # initialize next_url
                 next_url = '{}/{}?{}'.format(
                     client.base_url,
@@ -506,7 +510,6 @@ class SnapchatAds:
                                 raise RuntimeError(data_record)
 
                             record = data_record.get(data_key_record, {})
-
                             # Transforms to align schemas for targeting streams
                             if stream_name.startswith('targeting_'):
                                 record['targeting_group'] = targeting_group
@@ -567,7 +570,6 @@ class SnapchatAds:
                             last_datetime=last_datetime)
                         LOGGER.info('Stream {}, batch processed {} records'.format(
                             stream_name, record_count))
-
                     # Loop thru parent batch records for each children objects (if should stream)
                     children = stream_class.children
                     if children:

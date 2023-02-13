@@ -1,4 +1,9 @@
 # Changelog
+## 0.1.2
+  * Fall back to default values for un-configured optional params [#25](https://github.com/singer-io/tap-snapchat-ads/pull/25)
+  * Fixes following issues [#26](https://github.com/singer-io/tap-snapchat-ads/pull/26)
+    * `End time should be after start time` error
+    *  URL creation using `urlencode`
 
 ## 0.1.1
   * Added mechanism to extract data for selected profiles [#22](https://github.com/singer-io/tap-snapchat-ads/pull/22)
