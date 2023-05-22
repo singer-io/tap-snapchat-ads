@@ -10,7 +10,7 @@ setup(name='tap-snapchat-ads',
       py_modules=['tap_snapchat_ads'],
       install_requires=[
           'backoff==1.8.0',
-          'requests==2.23.0',
+          'requests==2.31.0',
           'pyhumps==1.3.1',
           'singer-python==5.9.0'
       ],
