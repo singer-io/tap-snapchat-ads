@@ -21,6 +21,7 @@ import pytz
 import math
 import humps
 from datetime import timedelta
+from dateutil import tz
 from urllib.parse import urlencode
 import singer
 from singer import Transformer, metadata, metrics, utils
@@ -329,9 +330,9 @@ class SnapchatAds:
 
         # Get the timezone and latest bookmark for the stream
         if not timezone_desc:
-            timezone = pytz.timezone('UTC')
+            timezone = tz.gettz("UTC")
         else:
-            timezone = pytz.timezone(timezone_desc)
+            timezone = tz.gettz(timezone_desc)
         LOGGER.info('timezone = {}'.format(timezone))
 
         last_datetime = self.get_bookmark(state, stream_name, start_date, bookmark_field, parent, parent_id)
