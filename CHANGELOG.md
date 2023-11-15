@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.4
+  * Bumps requests package [#27](https://github.com/singer-io/tap-snapchat-ads/pull/27)
+
 ## 0.1.3
   * Uses tz.gettz instead of pytz.timezone to deal with dst issues #[28](https://github.com/singer-io/tap-snapchat-ads/pull/28)
 
