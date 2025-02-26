@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.0
+  * Handle `org_account_ids` config property as list or json-encoded string [#30](https://github.com/singer-io/tap-snapchat-ads/pull/30)
+
 ## 0.1.4
   * Bumps requests package [#27](https://github.com/singer-io/tap-snapchat-ads/pull/27)
 
