@@ -33,7 +33,7 @@ def maybe_parse_org_account_ids(config):
         try:
             config.update(org_account_ids = json.loads(config["org_account_ids"]))
         except json.JSONDecodeError as e:
-            raise ValueError(f"Error parsing org_account_ids string: {e}")
+            raise ValueError(f"Error parsing org_account_ids string: {e}") from e
 
 @singer.utils.handle_top_exception(LOGGER)
 def main():
