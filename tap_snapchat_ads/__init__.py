@@ -27,12 +27,19 @@ def do_discover():
     json.dump(catalog.to_dict(), sys.stdout, indent=2)
     LOGGER.info('Finished discover')
 
+def maybe_parse_org_account_ids(config):
+    """Converts org_account_ids into a list if it is a JSON-encoded string."""
+    if isinstance(config["org_account_ids"], str):
+        try:
+            config.update(org_account_ids = json.loads(config["org_account_ids"]))
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Error parsing org_account_ids string: {e}") from e
 
 @singer.utils.handle_top_exception(LOGGER)
 def main():
 
     parsed_args = singer.utils.parse_args(REQUIRED_CONFIG_KEYS)
-
+    maybe_parse_org_account_ids(parsed_args.config)
     with SnapchatClient(parsed_args.config['client_id'],
                         parsed_args.config['client_secret'],
                         parsed_args.config['refresh_token'],
