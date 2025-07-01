@@ -12,7 +12,7 @@ setup(name='tap-snapchat-ads',
           'backoff==1.10.0',
           'requests==2.32.4',
           'pyhumps==1.3.1',
-          'singer-python==5.13.1'
+          'singer-python==5.13.2'
       ],
       entry_points='''
           [console_scripts]
