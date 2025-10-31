@@ -41,7 +41,7 @@ def get_schemas():
         for replication_key in (stream_class.replication_keys or []):
             mdata_map[('properties', replication_key)]['inclusion'] = 'automatic'
             
-        parent_tap_stream_id = getattr(stream_class, "parent", None)
+        parent_tap_stream_id = getattr(stream_class, "parent_stream", None)
         if parent_tap_stream_id:
             mdata_map = metadata.write(mdata_map, (), 'parent-tap-stream-id', parent_tap_stream_id)
 
