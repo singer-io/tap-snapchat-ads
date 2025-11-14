@@ -187,6 +187,8 @@ class SnapchatAds:
                     # Reset max_bookmark_value to new value if higher
                     if bookmark_field and (bookmark_field in transformed_record):
                         bookmark_date = transformed_record.get(bookmark_field)
+                        if not bookmark_date:
+                            continue
                         bookmark_dttm = strptime_to_utc(bookmark_date)
                         last_dttm = strptime_to_utc(last_datetime)
 
