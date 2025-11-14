@@ -21,7 +21,7 @@ class SnapchatStartDateTest(SnapchatBase):
         self.run_test(expected_streams_1, "2021-01-01T00:00:00Z", "2022-04-21T00:00:00Z")
         self.run_test(expected_streams_2, "2022-04-01T00:00:00Z", "2022-04-28T00:00:00Z")
         self.run_test(expected_streams_3, "2020-01-01T00:00:00Z", "2021-01-01T00:00:00Z")
-        self.run_test(expected_streams_4, "2023-01-01T00:00:00Z", "2024-01-01T00:00:00Z")
+        self.run_test(expected_streams_4, "2021-01-01T00:00:00Z", "2022-01-01T00:00:00Z")
 
     def run_test(self, streams, start_date_1, start_date_2):
         """
