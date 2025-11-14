@@ -107,8 +107,8 @@ class SnapchatDiscoveryTest(SnapchatBase):
                             f"expected '{expected_parent_stream_id}', got '{actual_parent_stream_id}'"
                     )
                 else:
-                    self.assertIsNotNone(actual_parent_stream_id,
-                                         msg=f"{self.PARENT_TAP_STREAM_ID} missing for {stream}")
+                    self.assertIsNone(actual_parent_stream_id,
+                        msg=f"{stream} should NOT have a parent but metadata returned '{actual_parent_stream_id}'")
 
                 # verify that all other fields have inclusion of available
                 # This assumes there are no unsupported fields for SaaS sources
