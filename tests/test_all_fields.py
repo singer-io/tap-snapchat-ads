@@ -11,6 +11,10 @@ class SnapchatAllFieldsTest(SnapchatBase):
             'my_display_name',
             'my_invited_email'
         },
+        'members': {
+            'created_at',
+            'updated_at'
+        },
         'ad_accounts': {
             'lifetime_spend_cap_micro'
         },
