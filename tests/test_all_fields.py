@@ -12,7 +12,7 @@ class SnapchatAllFieldsTest(SnapchatBase):
             'my_invited_email'
         },
         'members': {
-            'created_at'
+            'created_at',
             'updated_at'
         },
         'ad_accounts': {
