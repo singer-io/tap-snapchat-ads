@@ -12,7 +12,7 @@ class SnapchatAllFieldsTest(SnapchatBase):
             'my_invited_email'
         },
         'members': {
-            'created_at',
+            'created_at'
             'updated_at'
         },
         'ad_accounts': {
@@ -30,7 +30,6 @@ class SnapchatAllFieldsTest(SnapchatBase):
             'reach_goal'
         },
         'ads': {
-            'paying_advertiser_name',
             'third_party_swipe_tracking_urls'
         },
         'creatives': {
@@ -38,11 +37,9 @@ class SnapchatAllFieldsTest(SnapchatBase):
             'ad_to_message_properties',
             'app_install_properties',
             'collection_properties',
-            'composite_properties',
             'deep_link_properties',
             'dynamic_render_properties',
             'longform_video_properties',
-            'playback_type',
             'preview_creative_id',
             'preview_properties'
         },
