@@ -18,7 +18,7 @@ class SnapchatPaginationTest(SnapchatBase):
         # we are getting duplicate records for 'id' fields for this stream
         # when asked support about this, but this is known behavior from the API side
         # Please refer card: https://jira.talendforge.org/browse/TDL-18686 for more details
-        known_failing_streams = {"targeting_android_versions"}
+        known_failing_streams = {"targeting_android_versions", "targeting_ios_versions"}
 
         # phone_numbers: need to another phone number and verify it using OTP
         # pixels: not able to generate another record

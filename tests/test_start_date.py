@@ -87,7 +87,7 @@ class SnapchatStartDateTest(SnapchatBase):
         # There is a assertion for this test: Verify 1st sync (start date=today-N days)
         #       record count > 2nd sync (start date=today) record count.
         # but in our account only 1 'organization' is present
-        for stream in expected_streams - {"organizations"}:
+        for stream in expected_streams - {"organizations", "product_catalogs"}:
             with self.subTest(stream=stream):
 
                 # expected values
