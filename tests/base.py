@@ -100,7 +100,7 @@ class SnapchatBase(unittest.TestCase):
             self.OBEYS_START_DATE: True
         }
         full_table_metadata = {
-            self.PRIMARY_KEYS: {"id"},
+            self.PRIMARY_KEYS: {"id", "name"},
             self.REPLICATION_METHOD: self.FULL_TABLE,
             self.OBEYS_START_DATE: False
         }
