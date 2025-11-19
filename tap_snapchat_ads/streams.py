@@ -1218,7 +1218,7 @@ class TargetingIOSVersions(SnapchatAds):
     json_schema = 'schemas/shared/targeting.json'
     targeting_group = 'device'
     targeting_type = 'os_version'
-    key_properties = ['id', 'name']
+    key_properties = ['id']
     replication_method = 'FULL_TABLE'
     path = 'targeting/device/iOS/os_version'
     data_key_array = 'targeting_dimensions'
