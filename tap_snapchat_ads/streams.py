@@ -703,7 +703,7 @@ class Members(SnapchatAds):
     parent_stream = 'organizations'
     key_properties = ['id']
     replication_method = 'FULL_TABLE'
-    replication_keys = ['updated_at']
+    replication_keys = []
     path = 'organizations/{parent_id}/members'
     data_key_array = 'members'
     data_key_record = 'member'
