@@ -69,7 +69,8 @@ class SnapchatAllFieldsTest(SnapchatBase):
         # All the streams with 'targeting_*' contains a general schema structure
         # for all the stream. So, all streams will not contain all the fields.
         'targeting_advanced_demographics': {
-            'country_code'
+            'country_code',
+            'parent_id'
         },
         'targeting_age_groups': {
             'country_code',

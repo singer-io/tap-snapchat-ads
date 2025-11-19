@@ -4,6 +4,8 @@ from base import SnapchatBase
 
 class SnapchatInterruptedSyncTest(SnapchatBase):
 
+    maxDiff = None
+
     def assertIsDateFormat(self, value, str_format):
         """
             Assertion Method that verifies a string value is a formatted datetime with
