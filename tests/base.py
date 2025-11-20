@@ -24,6 +24,7 @@ class SnapchatBase(unittest.TestCase):
     FULL_TABLE = "FULL_TABLE"
     INCREMENTAL = "INCREMENTAL"
     OBEYS_START_DATE = "obey-start-date"
+    PARENT_TAP_STREAM_ID = "parent-tap-stream-id"
 
     # TDL-21946 Work-Item to generate test data for following list of streams
     stats_streams = {"ad_account_stats_daily", "ad_account_stats_hourly", "pixel_domain_stats",
@@ -107,7 +108,7 @@ class SnapchatBase(unittest.TestCase):
             "organizations": incremental_metadata,
             "funding_sources": incremental_metadata,
             "billing_centers": incremental_metadata,
-            "members": incremental_metadata,
+            "members": full_table_metadata,
             "roles": full_table_metadata,
             "ad_accounts": incremental_metadata,
             "ad_account_stats_daily": stats_metadata,

@@ -61,7 +61,7 @@ class SnapchatDiscoveryTest(SnapchatBase):
                 actual_automatic_fields = set(item.get("breadcrumb", ["properties", None])[1] for item in metadata
                                               if item.get("metadata").get("inclusion") == "automatic")
                 actual_replication_method = stream_properties[0].get("metadata", {self.REPLICATION_METHOD: None}).get(self.REPLICATION_METHOD)
-
+                actual_parent_stream_id = stream_properties[0].get("metadata", {self.PARENT_TAP_STREAM_ID: None}).get(self.PARENT_TAP_STREAM_ID)
                 ##########################################################################
                 ### metadata assertions
                 ##########################################################################
@@ -97,6 +97,14 @@ class SnapchatDiscoveryTest(SnapchatBase):
                 # verify that primary keys and replication keys
                 # are given the inclusion of automatic in metadata.
                 self.assertSetEqual(expected_automatic_fields, actual_automatic_fields)
+
+                expected_parent_stream_id = self.expected_metadata()[stream].get(self.PARENT_TAP_STREAM_ID)
+                if expected_parent_stream_id:
+                    self.assertEqual(
+                        expected_parent_stream_id, actual_parent_stream_id,
+                        msg=f"{stream} has incorrect {self.PARENT_TAP_STREAM_ID}: "
+                            f"expected '{expected_parent_stream_id}', got '{actual_parent_stream_id}'"
+                    )
 
                 # verify that all other fields have inclusion of available
                 # This assumes there are no unsupported fields for SaaS sources
