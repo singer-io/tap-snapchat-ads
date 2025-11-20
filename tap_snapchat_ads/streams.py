@@ -187,6 +187,10 @@ class SnapchatAds:
                     # Reset max_bookmark_value to new value if higher
                     if bookmark_field and (bookmark_field in transformed_record):
                         bookmark_date = transformed_record.get(bookmark_field)
+                        if not bookmark_date:
+                            LOGGER.warning(f"Skipping record in stream '{stream_name}' "
+                                           f"with null bookmark field '{bookmark_field}': {transformed_record}")
+                            continue
                         bookmark_dttm = strptime_to_utc(bookmark_date)
                         last_dttm = strptime_to_utc(last_datetime)
 
@@ -700,8 +704,8 @@ class Members(SnapchatAds):
     tap_stream_id = 'members'
     parent_stream = 'organizations'
     key_properties = ['id']
-    replication_method = 'INCREMENTAL'
-    replication_keys = ['updated_at']
+    replication_method = 'FULL_TABLE'
+    replication_keys = []
     path = 'organizations/{parent_id}/members'
     data_key_array = 'members'
     data_key_record = 'member'
