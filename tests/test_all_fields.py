@@ -11,6 +11,10 @@ class SnapchatAllFieldsTest(SnapchatBase):
             'my_display_name',
             'my_invited_email'
         },
+        'members': {
+            'created_at',
+            'updated_at'
+        },
         'ad_accounts': {
             'lifetime_spend_cap_micro'
         },
@@ -26,7 +30,6 @@ class SnapchatAllFieldsTest(SnapchatBase):
             'reach_goal'
         },
         'ads': {
-            'paying_advertiser_name',
             'third_party_swipe_tracking_urls'
         },
         'creatives': {
@@ -34,11 +37,9 @@ class SnapchatAllFieldsTest(SnapchatBase):
             'ad_to_message_properties',
             'app_install_properties',
             'collection_properties',
-            'composite_properties',
             'deep_link_properties',
             'dynamic_render_properties',
             'longform_video_properties',
-            'playback_type',
             'preview_creative_id',
             'preview_properties'
         },
@@ -68,7 +69,8 @@ class SnapchatAllFieldsTest(SnapchatBase):
         # All the streams with 'targeting_*' contains a general schema structure
         # for all the stream. So, all streams will not contain all the fields.
         'targeting_advanced_demographics': {
-            'country_code'
+            'country_code',
+            'parent_id'
         },
         'targeting_age_groups': {
             'country_code',
