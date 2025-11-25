@@ -101,7 +101,7 @@ class SnapchatInterruptedSyncTest(SnapchatBase):
 
             self.assertDictEqual(final_state_norm, full_sync_state_norm)
 
-        # stream-level assertions
+        # stream-level assertion
         for stream in expected_streams:
             with self.subTest(stream=stream):
                 if stream in problematic_streams:
