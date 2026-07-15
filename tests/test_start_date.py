@@ -11,9 +11,10 @@ class SnapchatStartDateTest(SnapchatBase):
         # phone_numbers: need to another phone number and verify it using OTP
         # funding_sources: need to payment method
         # pixels: not able to generate another record
-        streams_with_one_records = {"funding_sources", "phone_numbers", "pixels"}
+        # audience_segments: excluded from execution
+        streams_with_one_records = {"funding_sources", "phone_numbers", "pixels", "audience_segments"}
 
-        expected_streams_1 = {"organizations", "ad_accounts", "audience_segments", "product_catalogs", "product_sets", "campaigns"}
+        expected_streams_1 = {"organizations", "ad_accounts", "product_catalogs", "product_sets", "campaigns"}
         expected_streams_2 = {"billing_centers"}
         expected_streams_3 = {"members"}
         expected_streams_4 = self.expected_streams() - self.stats_streams - self.missing_targeting_streams -  streams_with_one_records - expected_streams_1 - expected_streams_2 - expected_streams_3
