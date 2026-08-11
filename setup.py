@@ -11,7 +11,6 @@ setup(name='tap-snapchat-ads',
       install_requires=[
           'backoff==2.2.1',
           'requests==2.34.2',
-          'pyhumps==3.8.0',
           'singer-python==6.8.0'
       ],
       entry_points='''
@@ -28,8 +27,11 @@ setup(name='tap-snapchat-ads',
       },
       extras_require={
           'dev': [
-              'pylint',
-              'ipdb',
-              'nose',
+            'pylint',
+            'ipdb',
+            'nose',
+            'pytest',
+            'pytest-cov',
+            'coverage',
           ]
       })

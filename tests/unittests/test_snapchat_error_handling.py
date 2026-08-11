@@ -1,4 +1,3 @@
-from distutils.log import debug
 import unittest
 from unittest import mock
 import tap_snapchat_ads

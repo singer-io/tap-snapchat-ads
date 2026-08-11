@@ -11,7 +11,7 @@ jobs:
             uv venv --python 3.12 /usr/local/share/virtualenvs/tap-snapchat-ads
             source /usr/local/share/virtualenvs/tap-snapchat-ads/bin/activate
             uv pip install -U pip setuptools
-            uv pip install .[dev]
+            uv pip install -e .[dev]
       - run:
           name: 'pylint'
           command: |
@@ -26,13 +26,22 @@ jobs:
           name: 'Unit Tests'
           command: |
             source /usr/local/share/virtualenvs/tap-snapchat-ads/bin/activate
-            pip install pytest coverage
-            coverage run -m pytest tests/unittests
+            mkdir -p test_output
+            coverage run --source=tap_snapchat-ads -m pytest tests/unittests --junitxml=test_output/report.xml
+          when: always
+      - run:
+          name: 'Coverage Report'
+          command: |
+            source /usr/local/share/virtualenvs/tap-snapchat-ads/bin/activate
+            coverage report -m --fail-under=99
             coverage html
+          when: always
       - store_test_results:
-          path: test_output/report.xml
+          path: test_output
       - store_artifacts:
           path: htmlcov
+      - store_artifacts:
+          path: coverage.txt
       - run:
           name: 'Integration Tests'
           command: |
