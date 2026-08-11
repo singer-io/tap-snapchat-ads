@@ -27,11 +27,6 @@ import singer
 from singer import Transformer, metadata, metrics, utils
 from singer.utils import strptime_to_utc, strftime
 
-try:
-    import humps
-except ImportError:
-    humps = None
-
 
 def _to_snake_case(value):
     if not isinstance(value, str):
@@ -54,12 +49,6 @@ def _decamelize_fallback(value):
 
     return value
 
-
-def decamelize_record(record):
-    if humps is not None:
-        return humps.decamelize(record)
-
-    return _decamelize_fallback(record)
 
 ALL_STATS_FIELDS = 'android_installs,attachment_avg_view_time_millis,attachment_impressions,attachment_quartile_1,attachment_quartile_2,attachment_quartile_3,attachment_total_view_time_millis,attachment_view_completion,avg_screen_time_millis,avg_view_time_millis,impressions,ios_installs,quartile_1,quartile_2,quartile_3,screen_time_millis,spend,swipe_up_percent,swipes,total_installs,video_views,video_views_time_based,video_views_15s,view_completion,view_time_millis,conversion_purchases,conversion_purchases_value,conversion_save,conversion_start_checkout,conversion_add_cart,conversion_view_content,conversion_add_billing,conversion_sign_ups,conversion_searches,conversion_level_completes,conversion_app_opens,conversion_page_views,conversion_subscribe,conversion_ad_click,conversion_ad_view,conversion_complete_tutorial,conversion_invite,conversion_login,conversion_share,conversion_reserve,conversion_achievement_unlocked,conversion_add_to_wishlist,conversion_spend_credits,conversion_rate,conversion_start_trial,conversion_list_view,custom_event_1,custom_event_2,custom_event_3,custom_event_4,custom_event_5,attachment_frequency,attachment_uniques,frequency,uniques'
 
@@ -524,7 +513,7 @@ class SnapchatAds:
 
                                 # transform record
                                 try:
-                                    transformed_record = decamelize_record(record)
+                                    transformed_record = _decamelize_fallback(record)
                                 except Exception as err:
                                     LOGGER.error('{}'.format(err))
                                     raise
@@ -573,7 +562,7 @@ class SnapchatAds:
 
                             # transform record (remove inconsistent use of CamelCase)
                             try:
-                                transformed_record = decamelize_record(record)
+                                transformed_record = _decamelize_fallback(record)
                             except Exception as err:
                                 LOGGER.error('{}'.format(err))
                                 LOGGER.error('error record: {}'.format(record))

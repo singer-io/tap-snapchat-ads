@@ -1,7 +1,3 @@
-"""
-Coverage tests for tap_snapchat_ads/discover.py and tap_snapchat_ads/schema.py.
-Covers the full discover() and get_schemas() functions.
-"""
 import io
 import json
 import unittest
