@@ -2,6 +2,7 @@
 
 ## 0.3.0
   * Metadata update [#35](https://github.com/singer-io/tap-snapchat-ads/pull/35)
+  * Update Python version to 3.12
 
 ## 0.2.1
   * Dependency upgrades [#31](https://github.com/singer-io/tap-snapchat-ads/pull/31)

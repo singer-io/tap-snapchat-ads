@@ -27,7 +27,7 @@ jobs:
           command: |
             source /usr/local/share/virtualenvs/tap-snapchat-ads/bin/activate
             mkdir -p test_output
-            coverage run --source=tap_snapchat-ads -m pytest tests/unittests --junitxml=test_output/report.xml
+            coverage run --source=tap_snapchat_ads -m pytest tests/unittests --junitxml=test_output/report.xml
           when: always
       - run:
           name: 'Coverage Report'
