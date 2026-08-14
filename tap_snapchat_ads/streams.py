@@ -19,13 +19,36 @@
 # pylint: disable=line-too-long
 import pytz
 import math
-import humps
+import re
 from datetime import timedelta
 from dateutil import tz
 from urllib.parse import urlencode
 import singer
 from singer import Transformer, metadata, metrics, utils
 from singer.utils import strptime_to_utc, strftime
+
+
+def _to_snake_case(value):
+    if not isinstance(value, str):
+        return value
+
+    value = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', value)
+    value = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', value)
+    return value.replace('-', '_').lower()
+
+
+def _decamelize_fallback(value):
+    if isinstance(value, dict):
+        return {
+            _to_snake_case(key): _decamelize_fallback(val)
+            for key, val in value.items()
+        }
+
+    if isinstance(value, list):
+        return [_decamelize_fallback(item) for item in value]
+
+    return value
+
 
 ALL_STATS_FIELDS = 'android_installs,attachment_avg_view_time_millis,attachment_impressions,attachment_quartile_1,attachment_quartile_2,attachment_quartile_3,attachment_total_view_time_millis,attachment_view_completion,avg_screen_time_millis,avg_view_time_millis,impressions,ios_installs,quartile_1,quartile_2,quartile_3,screen_time_millis,spend,swipe_up_percent,swipes,total_installs,video_views,video_views_time_based,video_views_15s,view_completion,view_time_millis,conversion_purchases,conversion_purchases_value,conversion_save,conversion_start_checkout,conversion_add_cart,conversion_view_content,conversion_add_billing,conversion_sign_ups,conversion_searches,conversion_level_completes,conversion_app_opens,conversion_page_views,conversion_subscribe,conversion_ad_click,conversion_ad_view,conversion_complete_tutorial,conversion_invite,conversion_login,conversion_share,conversion_reserve,conversion_achievement_unlocked,conversion_add_to_wishlist,conversion_spend_credits,conversion_rate,conversion_start_trial,conversion_list_view,custom_event_1,custom_event_2,custom_event_3,custom_event_4,custom_event_5,attachment_frequency,attachment_uniques,frequency,uniques'
 
@@ -187,6 +210,10 @@ class SnapchatAds:
                     # Reset max_bookmark_value to new value if higher
                     if bookmark_field and (bookmark_field in transformed_record):
                         bookmark_date = transformed_record.get(bookmark_field)
+                        if not bookmark_date:
+                            LOGGER.warning(f"Skipping record in stream '{stream_name}' "
+                                           f"with null bookmark field '{bookmark_field}': {transformed_record}")
+                            continue
                         bookmark_dttm = strptime_to_utc(bookmark_date)
                         last_dttm = strptime_to_utc(last_datetime)
 
@@ -486,7 +513,7 @@ class SnapchatAds:
 
                                 # transform record
                                 try:
-                                    transformed_record = humps.decamelize(record)
+                                    transformed_record = _decamelize_fallback(record)
                                 except Exception as err:
                                     LOGGER.error('{}'.format(err))
                                     raise
@@ -535,7 +562,7 @@ class SnapchatAds:
 
                             # transform record (remove inconsistent use of CamelCase)
                             try:
-                                transformed_record = humps.decamelize(record)
+                                transformed_record = _decamelize_fallback(record)
                             except Exception as err:
                                 LOGGER.error('{}'.format(err))
                                 LOGGER.error('error record: {}'.format(record))
@@ -700,8 +727,8 @@ class Members(SnapchatAds):
     tap_stream_id = 'members'
     parent_stream = 'organizations'
     key_properties = ['id']
-    replication_method = 'INCREMENTAL'
-    replication_keys = ['updated_at']
+    replication_method = 'FULL_TABLE'
+    replication_keys = []
     path = 'organizations/{parent_id}/members'
     data_key_array = 'members'
     data_key_record = 'member'
