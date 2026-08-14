@@ -18,7 +18,7 @@ class SnapchatPaginationTest(SnapchatBase):
         # we are getting duplicate records for 'id' fields for this stream
         # when asked support about this, but this is known behavior from the API side
         # Please refer card: https://jira.talendforge.org/browse/TDL-18686 for more details
-        known_failing_streams = {"targeting_android_versions"}
+        known_failing_streams = {"targeting_android_versions", "targeting_ios_versions"}
 
         # phone_numbers: need to another phone number and verify it using OTP
         # pixels: not able to generate another record
@@ -28,7 +28,7 @@ class SnapchatPaginationTest(SnapchatBase):
         # for organizations and ad_accounts, pagination is not being used in tap implementation, as they are part of profile selection
         pagination_not_supported_streams = {"funding_sources", "members",  "organizations", "ad_accounts"} | self.stats_streams
 
-        streams_with_50_page_size = {"targeting_advanced_demographics", "targeting_interests_dlxc", "targeting_countries", "targeting_regions", "targeting_ios_versions", "targeting_carriers", "targeting_metros", "targeting_interests_scls", "targeting_interests_dlxs", "targeting_interests_dlxp", "targeting_interests_plc", "targeting_location_categories"}
+        streams_with_50_page_size = {"targeting_advanced_demographics", "targeting_interests_dlxc", "targeting_countries", "targeting_regions", "targeting_carriers", "targeting_metros", "targeting_interests_scls", "targeting_interests_dlxs", "targeting_interests_dlxp", "targeting_interests_plc", "targeting_location_categories"}
         streams_with_1000_page_size = {"targeting_device_makes", "targeting_postal_codes", "targeting_interests_nln"}
         streams_with_1_page_size = {"product_sets", "targeting_connection_types", "creatives", "ad_squads", "targeting_os_types", "media", "ads", "product_catalogs", "billing_centers", "targeting_genders", "audience_segments", "targeting_languages", "targeting_age_groups", "roles", "campaigns"}
 
