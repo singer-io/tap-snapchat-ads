@@ -12,8 +12,7 @@ class SnapchatAllFieldsTest(SnapchatBase):
             'my_invited_email'
         },
         'members': {
-            'created_at',
-            'updated_at'
+            'created_at'
         },
         'ad_accounts': {
             'lifetime_spend_cap_micro'
@@ -63,8 +62,7 @@ class SnapchatAllFieldsTest(SnapchatBase):
         },
         # These fields are not being replicated from the API, and it is confirmed by the support
         'roles': {
-            'created_at',
-            'updated_at'
+            'created_at'
         },
         # All the streams with 'targeting_*' contains a general schema structure
         # for all the stream. So, all streams will not contain all the fields.
