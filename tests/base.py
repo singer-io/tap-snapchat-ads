@@ -99,12 +99,6 @@ class SnapchatBase(unittest.TestCase):
             self.REPLICATION_KEYS: {"end_time"},
             self.OBEYS_START_DATE: True
         }
-        incremental_end_time_metadata = {
-            self.PRIMARY_KEYS: {"id"},
-            self.REPLICATION_METHOD: self.INCREMENTAL,
-            self.REPLICATION_KEYS: {"end_time"},
-            self.OBEYS_START_DATE: True
-        }
         incremental_organization_metadata = {
             self.PRIMARY_KEYS: {"id", "organization_id"},
             self.REPLICATION_METHOD: self.INCREMENTAL,

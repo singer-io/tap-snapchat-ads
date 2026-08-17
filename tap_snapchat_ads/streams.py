@@ -90,6 +90,7 @@ class SnapchatAds:
     parent_stream = None
     parent = None
     parent_key_property = None
+    parent_replication_key = None
     grandparent_stream = None
     great_grandparent_stream = None
     json_schema = None
@@ -306,7 +307,8 @@ class SnapchatAds:
             sync_streams,
             selected_streams,
             timezone_desc=None,
-            parent_id=None):
+            parent_id=None,
+            parent_record=None):
         
         """
         To sync all streams (i.e. parent and child stream)
@@ -315,7 +317,7 @@ class SnapchatAds:
         # endpoint_config variables
         base_path = stream_class.path or stream_name
         bookmark_field = next(iter(stream_class.replication_keys ), None)
-        params = stream_class.params
+        params = dict(stream_class.params)
         paging = stream_class.paging
         bookmark_query_field_from = stream_class.bookmark_query_field_from
         bookmark_query_field_to = stream_class.bookmark_query_field_to
@@ -327,6 +329,7 @@ class SnapchatAds:
         id_fields = stream_class.key_properties
         parent = stream_class.parent
         parent_key_property = stream_class.parent_key_property
+        parent_replication_key = stream_class.parent_replication_key
         is_stats_stream = '_stats_' in stream_name or stream_name.endswith('_stats')
         date_window_size = int(stream_class.date_window_size)
         # Store parent_id into base_parent for bookmark writing
@@ -511,6 +514,11 @@ class SnapchatAds:
                                 if parent and parent_id:
                                     parent_key = parent_key_property or '{}_id'.format(parent)
                                     record.setdefault(parent_key, parent_id)
+                                if parent_replication_key and parent_record:
+                                    record.setdefault(
+                                        parent_replication_key,
+                                        parent_record.get(parent_replication_key),
+                                    )
 
                                 # De-nest stats
                                 stats = record.get('stats', {})
@@ -525,12 +533,13 @@ class SnapchatAds:
                                     LOGGER.error('{}'.format(err))
                                     raise
 
-                                # verify primary_keys are in tansformed_record
-                                if 'id' not in transformed_record or 'start_time' not in transformed_record:
-                                    LOGGER.error('Stream: {}, Missing key (id or start_time)'.format(
-                                        stream_name))
-                                    LOGGER.error('transformed_record: {}'.format(transformed_record))
-                                    raise RuntimeError
+                                # Verify all stream primary keys are in the transformed record.
+                                for key in id_fields:
+                                    if not transformed_record.get(key):
+                                        LOGGER.error('Stream: {}, Missing key {}'.format(
+                                            stream_name, key))
+                                        LOGGER.info('transformed_record: {}'.format(transformed_record))
+                                        raise RuntimeError
 
                                 transformed_data.append(transformed_record)
                                 # End for record in records
@@ -566,6 +575,11 @@ class SnapchatAds:
                             if parent and parent_id:
                                 parent_key = parent_key_property or '{}_id'.format(parent)
                                 record.setdefault(parent_key, parent_id)
+                            if parent_replication_key and parent_record:
+                                record.setdefault(
+                                    parent_replication_key,
+                                    parent_record.get(parent_replication_key),
+                                )
 
                             # transform record (remove inconsistent use of CamelCase)
                             try:
@@ -644,7 +658,8 @@ class SnapchatAds:
                                         sync_streams=sync_streams,
                                         selected_streams=selected_streams,
                                         timezone_desc=timezone_desc,
-                                        parent_id=parent_id)
+                                        parent_id=parent_id,
+                                        parent_record=record)
 
                                     LOGGER.info(
                                         'FINISHED Sync for Stream: {}, parent_id: {}, total_records: {}'\
@@ -741,6 +756,7 @@ class Members(SnapchatAds):
     data_key_record = 'member'
     paging = False
     parent = 'organization'
+    parent_replication_key = 'updated_at'
     params = {}
                 
 # Reference: https://developers.snapchat.com/api/docs/?python#get-all-roles-in-organization
@@ -755,6 +771,7 @@ class Roles(SnapchatAds):
     data_key_record = 'role'
     paging = True
     parent = 'organization'
+    parent_replication_key = 'updated_at'
     params = {}
     
 # Reference: https://developers.snapchat.com/api/docs/#get-all-ad-accounts
