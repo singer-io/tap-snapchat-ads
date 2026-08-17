@@ -99,6 +99,30 @@ class SnapchatBase(unittest.TestCase):
             self.REPLICATION_KEYS: {"end_time"},
             self.OBEYS_START_DATE: True
         }
+        incremental_end_time_metadata = {
+            self.PRIMARY_KEYS: {"id"},
+            self.REPLICATION_METHOD: self.INCREMENTAL,
+            self.REPLICATION_KEYS: {"end_time"},
+            self.OBEYS_START_DATE: True
+        }
+        incremental_organization_metadata = {
+            self.PRIMARY_KEYS: {"id", "organization_id"},
+            self.REPLICATION_METHOD: self.INCREMENTAL,
+            self.REPLICATION_KEYS: {"updated_at"},
+            self.OBEYS_START_DATE: True
+        }
+        incremental_pixel_metadata = {
+            self.PRIMARY_KEYS: {"id", "pixel_id"},
+            self.REPLICATION_METHOD: self.INCREMENTAL,
+            self.REPLICATION_KEYS: {"end_time"},
+            self.OBEYS_START_DATE: True
+        }
+        incremental_catalog_metadata = {
+            self.PRIMARY_KEYS: {"id", "catalog_id"},
+            self.REPLICATION_METHOD: self.INCREMENTAL,
+            self.REPLICATION_KEYS: {"updated_at"},
+            self.OBEYS_START_DATE: True
+        }
         full_table_metadata = {
             self.PRIMARY_KEYS: {"id"},
             self.REPLICATION_METHOD: self.FULL_TABLE,
@@ -108,14 +132,14 @@ class SnapchatBase(unittest.TestCase):
             "organizations": incremental_metadata,
             "funding_sources": incremental_metadata,
             "billing_centers": incremental_metadata,
-            "members": full_table_metadata,
-            "roles": full_table_metadata,
+            "members": incremental_organization_metadata,
+            "roles": incremental_organization_metadata,
             "ad_accounts": incremental_metadata,
             "ad_account_stats_daily": stats_metadata,
             "ad_account_stats_hourly": stats_metadata,
             "audience_segments": incremental_metadata,
             "pixels": incremental_metadata,
-            "pixel_domain_stats": full_table_metadata,
+            "pixel_domain_stats": incremental_pixel_metadata,
             "media": incremental_metadata,
             "creatives": incremental_metadata,
             "phone_numbers": incremental_metadata,
@@ -129,7 +153,7 @@ class SnapchatBase(unittest.TestCase):
             "ad_stats_daily": stats_metadata,
             "ad_stats_hourly": stats_metadata,
             "product_catalogs": incremental_metadata,
-            "product_sets": full_table_metadata,
+            "product_sets": incremental_catalog_metadata,
             "targeting_age_groups": full_table_metadata,
             "targeting_genders": full_table_metadata,
             "targeting_languages": full_table_metadata,

@@ -76,3 +76,26 @@ class TestDiscover(unittest.TestCase):
         json.dump(catalog.to_dict(), captured, indent=2)
         data = json.loads(captured.getvalue())
         self.assertIn('streams', data)
+
+    def test_child_streams_match_parent_incremental_replication(self):
+        stream_entries = {s.tap_stream_id: s for s in discover().streams}
+        expected = {
+            'members': {'method': 'INCREMENTAL', 'keys': {'updated_at'}, 'primary_keys': {'id', 'organization_id'}},
+            'roles': {'method': 'INCREMENTAL', 'keys': {'updated_at'}, 'primary_keys': {'id', 'organization_id'}},
+            'pixel_domain_stats': {'method': 'INCREMENTAL', 'keys': {'end_time'}, 'primary_keys': {'id', 'pixel_id'}},
+            'product_sets': {'method': 'INCREMENTAL', 'keys': {'updated_at'}, 'primary_keys': {'id', 'catalog_id'}},
+        }
+
+        for stream_name, expectation in expected.items():
+            with self.subTest(stream=stream_name):
+                stream_entry = stream_entries[stream_name]
+                root_md = next(m for m in stream_entry.metadata if m.get('breadcrumb') == ())
+                self.assertEqual(
+                    root_md['metadata'].get('forced-replication-method'),
+                    expectation['method'],
+                )
+                self.assertSetEqual(
+                    set(root_md['metadata'].get('valid-replication-keys', [])),
+                    expectation['keys'],
+                )
+                self.assertSetEqual(set(stream_entry.key_properties), expectation['primary_keys'])
