@@ -628,14 +628,7 @@ class SnapchatAds:
                                 self.write_schema(catalog, child_stream_name, sync_streams, selected_streams)
                                 # For each parent record
                                 for record in transformed_data:
-                                    i = 0
-                                    # Set parent_id
-                                    for id_field in id_fields:
-                                        if i == 0:
-                                            parent_id_field = id_field
-                                        if id_field == 'id':
-                                            parent_id_field = id_field
-                                        i = i + 1
+                                    parent_id_field = 'id' if 'id' in id_fields else next(iter(id_fields), None)
                                     parent_id = record.get(parent_id_field)
 
                                     if stream_name == 'ad_accounts':
