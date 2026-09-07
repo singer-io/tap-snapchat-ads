@@ -9,6 +9,8 @@ from singer import metadata as singer_metadata
 from singer import utils as singer_utils
 from tap_snapchat_ads.streams import (
     SnapchatAds,
+    Members,
+    PixelDomainStats,
     ALL_STATS_FIELDS,
     get_hourly_stats_fields,
     _to_snake_case,
@@ -326,6 +328,174 @@ class TestProcessRecords(unittest.TestCase):
             last_datetime='2021-01-01T00:00:00Z',
         )
         self.assertGreater(max_bm, '2021-01-01T00:00:00Z')
+
+
+# ---------------------------------------------------------------------------
+# parent key injection
+# ---------------------------------------------------------------------------
+
+class TestParentKeyInjection(unittest.TestCase):
+    @mock.patch('tap_snapchat_ads.streams.singer.messages.write_record')
+    def test_members_injects_organization_id(self, mock_write):
+        schema = {
+            'type': 'object',
+            'properties': {
+                'id': {'type': 'string'},
+                'organization_id': {'type': 'string'},
+                'updated_at': {'type': 'string', 'format': 'date-time'},
+            },
+        }
+        SnapchatAds().sync_endpoint(
+            client=_make_mock_client({
+                'request_status': 'SUCCESS',
+                'members': [{
+                    'sub_request_status': 'SUCCESS',
+                    'member': {'id': 'member-1', 'updated_at': '2022-01-01T00:00:00Z'},
+                }],
+            }),
+            config={'start_date': '2021-01-01T00:00:00Z'},
+            catalog=_MockCatalog(schema_dict=schema),
+            state={},
+            stream_name='members',
+            stream_class=Members,
+            sync_streams=['members'],
+            selected_streams=['members'],
+            parent_id='organization-1',
+        )
+
+        self.assertEqual(mock_write.call_args.args[1]['organization_id'], 'organization-1')
+
+    @mock.patch('tap_snapchat_ads.streams.singer.messages.write_record')
+    def test_members_uses_parent_updated_at_when_missing(self, mock_write):
+        schema = {
+            'type': 'object',
+            'properties': {
+                'id': {'type': 'string'},
+                'organization_id': {'type': 'string'},
+                'updated_at': {'type': 'string', 'format': 'date-time'},
+            },
+        }
+        SnapchatAds().sync_endpoint(
+            client=_make_mock_client({
+                'request_status': 'SUCCESS',
+                'members': [{
+                    'sub_request_status': 'SUCCESS',
+                    'member': {'id': 'member-1'},
+                }],
+            }),
+            config={'start_date': '2021-01-01T00:00:00Z'},
+            catalog=_MockCatalog(schema_dict=schema),
+            state={},
+            stream_name='members',
+            stream_class=Members,
+            sync_streams=['members'],
+            selected_streams=['members'],
+            parent_id='organization-1',
+            parent_record={'id': 'organization-1', 'updated_at': '2022-01-01T00:00:00Z'},
+        )
+
+        self.assertEqual(mock_write.call_args.args[1]['updated_at'], '2022-01-01T00:00:00.000000Z')
+
+    @mock.patch('tap_snapchat_ads.streams.singer.messages.write_record')
+    def test_pixel_domain_stats_injects_pixel_id(self, mock_write):
+        schema = {
+            'type': 'object',
+            'properties': {
+                'id': {'type': 'string'},
+                'pixel_id': {'type': 'string'},
+                'start_time': {'type': 'string', 'format': 'date-time'},
+                'end_time': {'type': 'string', 'format': 'date-time'},
+            },
+        }
+        SnapchatAds().sync_endpoint(
+            client=_make_mock_client({
+                'request_status': 'SUCCESS',
+                'timeseries_stats': [{
+                    'timeseries_stat': {
+                        'id': 'domain-1',
+                        'timeseries': [{
+                            'start_time': '2022-01-01T00:00:00Z',
+                            'end_time': '2022-01-02T00:00:00Z',
+                            'stats': {},
+                        }],
+                    },
+                }],
+            }),
+            config={'start_date': '2021-01-01T00:00:00Z'},
+            catalog=_MockCatalog(schema_dict=schema),
+            state={},
+            stream_name='pixel_domain_stats',
+            stream_class=PixelDomainStats,
+            sync_streams=['pixel_domain_stats'],
+            selected_streams=['pixel_domain_stats'],
+            parent_id='pixel-1',
+        )
+
+        self.assertEqual(mock_write.call_args.args[1]['pixel_id'], 'pixel-1')
+
+    def test_pixel_domain_stats_requires_pixel_id(self):
+        schema = {
+            'type': 'object',
+            'properties': {
+                'id': {'type': 'string'},
+                'pixel_id': {'type': 'string'},
+                'start_time': {'type': 'string', 'format': 'date-time'},
+                'end_time': {'type': 'string', 'format': 'date-time'},
+            },
+        }
+        with self.assertRaises(RuntimeError):
+            SnapchatAds().sync_endpoint(
+                client=_make_mock_client({
+                    'request_status': 'SUCCESS',
+                    'timeseries_stats': [{
+                        'timeseries_stat': {
+                            'id': 'domain-1',
+                            'timeseries': [{
+                                'start_time': '2022-01-01T00:00:00Z',
+                                'end_time': '2022-01-02T00:00:00Z',
+                                'stats': {},
+                            }],
+                        },
+                    }],
+                }),
+                config={'start_date': '2021-01-01T00:00:00Z'},
+                catalog=_MockCatalog(schema_dict=schema),
+                state={},
+                stream_name='pixel_domain_stats',
+                stream_class=PixelDomainStats,
+                sync_streams=['pixel_domain_stats'],
+                selected_streams=['pixel_domain_stats'],
+            )
+
+
+class TestSyncEndpointParams(unittest.TestCase):
+    def test_does_not_mutate_class_params(self):
+        class StreamWithParams(SnapchatAds):
+            tap_stream_id = 'stream_with_params'
+            key_properties = ['id']
+            replication_method = 'FULL_TABLE'
+            replication_keys = []
+            path = 'stream_with_params'
+            data_key_array = 'records'
+            data_key_record = 'record'
+            paging = True
+            params = {'attribution_window': '{swipe_up_attribution_window}'}
+
+        SnapchatAds().sync_endpoint(
+            client=_make_mock_client({'request_status': 'SUCCESS', 'records': []}),
+            config={'start_date': '2021-01-01T00:00:00Z'},
+            catalog=_MockCatalog(),
+            state={},
+            stream_name='stream_with_params',
+            stream_class=StreamWithParams,
+            sync_streams=['stream_with_params'],
+            selected_streams=['stream_with_params'],
+        )
+
+        self.assertEqual(
+            StreamWithParams.params,
+            {'attribution_window': '{swipe_up_attribution_window}'},
+        )
 
 
 # ---------------------------------------------------------------------------

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.0
+  * Converted child streams (`members`, `roles`, `pixel_domain_stats`, `product_sets`) to `INCREMENTAL` replication using their parent streams' replication timestamps, and added composite parent keys for coordinated bookmarking. [#41](https://github.com/singer-io/tap-snapchat-ads/pull/41)
+
 ## 0.3.0
   * Metadata update [#35](https://github.com/singer-io/tap-snapchat-ads/pull/35)
   * Update Python version to 3.12
