@@ -269,9 +269,13 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
         if rate_limit_percent_remaining < 5:
             LOGGER.warning('Rate Limit Warning: {}; remaining calls: {}; remaining %: {}% '.format(
                 rate_limit, rate_limit_remaining, int(rate_limit_percent_remaining)))
-            wait_time = rate_limit_reset - int(time.time())
-            LOGGER.warning('Waiting for {} seconds.'.format(wait_time))
-            time.sleep(int(wait_time))
+            reset_time = normalize_unix_timestamp(rate_limit_reset)
+            current_time = time.time()
+            wait_time = max(0, reset_time - current_time)
+            LOGGER.warning('Rate limit reset header: {}; reset time: {:.3f}; current time: {:.3f}; waiting for {:.0f} seconds.'.format(
+                rate_limit_reset, reset_time, current_time, wait_time ))
+            if wait_time > 0:
+                time.sleep(wait_time)
 
         if response.status_code != 200:
             LOGGER.error('{}: {}'.format(response.status_code, response.text))
