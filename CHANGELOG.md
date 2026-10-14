@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.1
+  * Fix rate-limit handling: normalize `X-Rate-Limit-Reset` timestamps given in seconds or milliseconds, skip waiting when the reset is missing or already passed, and cap the wait at 24 hours. Added regression tests.
+
 ## 1.0.0
   * Converted child streams (`members`, `roles`, `pixel_domain_stats`, `product_sets`) to `INCREMENTAL` replication using their parent streams' replication timestamps, and added composite parent keys for coordinated bookmarking. [#41](https://github.com/singer-io/tap-snapchat-ads/pull/41)
 
