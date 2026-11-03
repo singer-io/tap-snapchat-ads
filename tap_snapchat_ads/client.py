@@ -13,7 +13,7 @@ API_VERSION = 'v1'
 SNAPCHAT_TOKEN_URL = 'https://accounts.snapchat.com/login/oauth2/access_token'
 REQUEST_TIMEOUT = 300 # 5 minutes default timeout
 LOGGER = singer.get_logger()
-MAX_RATE_LIMIT_WAIT = 24 * 60 * 60  # 24 hours
+MAX_RATE_LIMIT_WAIT = 6 * 60 * 60  # 6 hours
 
 class Server5xxError(Exception):
     pass
@@ -25,6 +25,9 @@ class Server429Error(Exception):
 class SnapchatError(Exception):
     pass
 
+
+class SnapchatRateLimitWaitExceededError(SnapchatError):
+    pass
 
 class SnapchatBadRequestError(SnapchatError):
     pass
@@ -289,8 +292,11 @@ class SnapchatClient: # pylint: disable=too-many-instance-attributes
             current_time = time.time()
             wait_time = max(0, reset_time - current_time)
             if wait_time > MAX_RATE_LIMIT_WAIT:
-                LOGGER.error('Rate limit reset is more than 24 hours away')
-                wait_time = MAX_RATE_LIMIT_WAIT
+                message = ('Rate limit reset is {:.0f} seconds away, which exceeds the maximum '
+                           'allowed wait of {} seconds (6 hours). Stopping the sync; retry later.'
+                           .format(wait_time, MAX_RATE_LIMIT_WAIT))
+                LOGGER.error(message)
+                raise SnapchatRateLimitWaitExceededError(message)
 
             LOGGER.warning('Rate limit reset header: {}; reset time: {:.3f}; current time: {:.3f}; waiting for {:.0f} seconds.'.format(
                 rate_limit_reset, reset_time, current_time, wait_time))

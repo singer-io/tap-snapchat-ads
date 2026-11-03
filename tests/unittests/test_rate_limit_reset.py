@@ -2,7 +2,8 @@ import unittest
 from unittest import mock
 
 from tap_snapchat_ads import SnapchatClient
-from tap_snapchat_ads.client import MAX_RATE_LIMIT_WAIT, Server429Error, normalize_unix_timestamp
+from tap_snapchat_ads.client import (MAX_RATE_LIMIT_WAIT, Server429Error,
+                                     SnapchatRateLimitWaitExceededError, normalize_unix_timestamp)
 
 NOW = 1_700_000_000.0
 
@@ -60,11 +61,13 @@ class TestRateLimitReset(unittest.TestCase):
         self._call(mock_request, resp)
         mock_sleep.assert_not_called()
 
-    def test_wait_capped_at_24_hours(self, mock_request, mock_sleep, _time):
-        self._call(mock_request, _limited(int(NOW) + 3 * MAX_RATE_LIMIT_WAIT))
-        mock_sleep.assert_called_once_with(MAX_RATE_LIMIT_WAIT)
+    def test_wait_over_max_raises_without_sleeping(self, mock_request, mock_sleep, _time):
+        with self.assertRaises(SnapchatRateLimitWaitExceededError) as ctx:
+            self._call(mock_request, _limited(int(NOW) + MAX_RATE_LIMIT_WAIT + 1))
+        self.assertIn('exceeds the maximum allowed wait', str(ctx.exception))
+        mock_sleep.assert_not_called()
 
-    def test_wait_exactly_24_hours_not_capped_down(self, mock_request, mock_sleep, _time):
+    def test_wait_exactly_max_sleeps(self, mock_request, mock_sleep, _time):
         self._call(mock_request, _limited(int(NOW) + MAX_RATE_LIMIT_WAIT))
         mock_sleep.assert_called_once_with(MAX_RATE_LIMIT_WAIT)
 
